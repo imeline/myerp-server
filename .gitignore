@@ -14,7 +14,7 @@ target/
 .sts4-cache
 
 ### IntelliJ IDEA ###
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -37,3 +37,4 @@ build/
 **/src/main/resources/application-*.properties
 
 client/
+.claude/settings.local.json
