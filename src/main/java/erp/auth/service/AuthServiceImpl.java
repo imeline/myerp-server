@@ -166,7 +166,7 @@ public class AuthServiceImpl implements AuthService {
         return LoginResponse.of(newAccessToken, reqRefresh, uuid, role, name);
     }
 
-    @Auditable(type = LogType.LOGIN, messageEl = "'로그아웃 처리: uuid='+ #args[0].uuid()")
+    @Auditable(type = LogType.LOGIN, messageEl = "'로그아웃'")
     @Override
     @Transactional
     public void logout(String uuid, RefreshTokenRequest request) {
