@@ -98,6 +98,14 @@
       <version>2.8.13</version>
     </dependency>
 
+    <!-- 개발용 자동 재시작 (target/classes 변경 시). jar 패키징에는 포함되지 않음 -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <scope>runtime</scope>
+      <optional>true</optional>
+    </dependency>
+
   </dependencies>
 
   <build>
