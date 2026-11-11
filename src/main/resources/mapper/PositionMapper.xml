@@ -84,7 +84,8 @@
         FROM position
         WHERE LOWER(name) = LOWER(#{name})
         <if test="excludeId != null">
-            AND position_id != #{excludeId}
+            <!-- '!=' 대신 LNNVL: Oracle 21.3에서 유니크 인덱스 + 바인드 값 '!=' 조건 결과가 뒤집히는 버그 회피 -->
+            AND LNNVL(position_id = #{excludeId})
         </if>
         AND
         <include refid="frag.tenantGuard"/>

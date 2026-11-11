@@ -111,7 +111,8 @@
         FROM item
         WHERE LOWER(name) = LOWER(#{name})
         <if test="excludeId != null">
-            AND item_id != #{excludeId}
+            <!-- '!=' 대신 LNNVL: Oracle 21.3에서 유니크 인덱스 + 바인드 값 '!=' 조건 결과가 뒤집히는 버그 회피 -->
+            AND LNNVL(item_id = #{excludeId})
         </if>
         AND deleted_at IS NULL
         AND
@@ -123,7 +124,8 @@
         FROM item
         WHERE LOWER(code) = LOWER(#{code})
         <if test="excludeId != null">
-            AND item_id != #{excludeId}
+            <!-- '!=' 대신 LNNVL: Oracle 21.3에서 유니크 인덱스 + 바인드 값 '!=' 조건 결과가 뒤집히는 버그 회피 -->
+            AND LNNVL(item_id = #{excludeId})
         </if>
         AND deleted_at IS NULL
         AND

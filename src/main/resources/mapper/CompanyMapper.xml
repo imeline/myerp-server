@@ -77,7 +77,8 @@
         FROM COMPANY
         WHERE biz_no = #{bizNo}
         <if test="excludeId != null">
-            AND company_id != #{excludeId}
+            <!-- '!=' 대신 LNNVL: Oracle 21.3에서 유니크 인덱스 + 바인드 값 '!=' 조건 결과가 뒤집히는 버그 회피 -->
+            AND LNNVL(company_id = #{excludeId})
         </if>
         AND deleted_at IS NULL
     </select>
@@ -87,7 +88,8 @@
         FROM COMPANY
         WHERE LOWER(name) = LOWER(#{name})
         <if test="excludeId != null">
-            AND company_id != #{excludeId}
+            <!-- '!=' 대신 LNNVL: Oracle 21.3에서 유니크 인덱스 + 바인드 값 '!=' 조건 결과가 뒤집히는 버그 회피 -->
+            AND LNNVL(company_id = #{excludeId})
         </if>
         AND deleted_at IS NULL
     </select>

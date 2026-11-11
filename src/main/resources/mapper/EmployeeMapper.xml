@@ -159,7 +159,8 @@
         FROM employee
         WHERE emp_no = #{empNo}
         <if test="excludeId != null">
-            AND employee_id != #{excludeId}
+            <!-- '!=' 대신 LNNVL: Oracle 21.3에서 유니크 인덱스 + 바인드 값 '!=' 조건 결과가 뒤집히는 버그 회피 -->
+            AND LNNVL(employee_id = #{excludeId})
         </if>
         AND
         status != 'RETIRED'
@@ -172,7 +173,8 @@
         FROM employee
         WHERE phone = #{phone}
         <if test="excludeId != null">
-            AND employee_id != #{excludeId}
+            <!-- '!=' 대신 LNNVL: Oracle 21.3에서 유니크 인덱스 + 바인드 값 '!=' 조건 결과가 뒤집히는 버그 회피 -->
+            AND LNNVL(employee_id = #{excludeId})
         </if>
         AND
         status != 'RETIRED'

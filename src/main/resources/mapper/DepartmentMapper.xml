@@ -22,7 +22,7 @@
         UPDATE DEPARTMENT
         SET
         name = #{department.name},
-        parent_id = #{department.parentId}
+        parent_id = #{department.parentId, jdbcType=NUMERIC} <!-- 최상위 부서는 NULL -->
         WHERE department_id = #{department.departmentId}
         AND
         <include refid="frag.tenantGuard"/>
@@ -107,7 +107,8 @@
             AND parent_id IS NULL
         </if>
         <if test="excludeId != null">
-            AND department_id != #{excludeId}
+            <!-- '!=' 대신 LNNVL: Oracle 21.3에서 유니크 인덱스 + 바인드 값 '!=' 조건 결과가 뒤집히는 버그 회피 -->
+            AND LNNVL(department_id = #{excludeId})
         </if>
         AND
         <include refid="frag.tenantGuard"/>
