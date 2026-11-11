@@ -30,10 +30,11 @@ public class PurchaseController {
      * 발주 등록 (발주 + 발주아이템 저장)
      */
     @PostMapping
-    public ApiResponse<Long> savePurchaseAndItems(@Valid @RequestBody PurchaseSaveRequest request) {
+    public ApiResponse<Long> savePurchaseAndItems(@Valid @RequestBody PurchaseSaveRequest request,
+                                                  @AuthenticationPrincipal UserPrincipal principal) {
         long tenantId = TenantContext.get();
         return ApiResponse.onSuccess(
-                purchaseService.savePurchaseAndPurchaseItems(request, tenantId));
+                purchaseService.savePurchaseAndPurchaseItems(request, tenantId, principal.getUuid()));
     }
 
     /**

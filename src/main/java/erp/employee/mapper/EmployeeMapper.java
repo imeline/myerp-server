@@ -47,6 +47,9 @@ public interface EmployeeMapper {
     boolean existsByPositionId(@Param("tenantId") long tenantId,
                                @Param("positionId") long positionId);
 
+    Optional<Long> findActiveEmployeeIdByAccountUuid(@Param("tenantId") long tenantId,
+                                                     @Param("accountUuid") String accountUuid);
+
     boolean existsActiveById(@Param("tenantId") long tenantId,
                              @Param("employeeId") long employeeId);
 

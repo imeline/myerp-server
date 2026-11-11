@@ -22,9 +22,10 @@ public class InboundController {
     private final InboundService inboundService;
 
     @PostMapping
-    public ApiResponse<Long> saveInbound(@Valid @RequestBody InboundSaveRequest request) {
+    public ApiResponse<Long> saveInbound(@Valid @RequestBody InboundSaveRequest request,
+                                         @AuthenticationPrincipal UserPrincipal principal) {
         long tenantId = TenantContext.get();
-        return ApiResponse.onSuccess(inboundService.saveInbound(request, tenantId));
+        return ApiResponse.onSuccess(inboundService.saveInbound(request, tenantId, principal.getUuid()));
     }
 
     @GetMapping

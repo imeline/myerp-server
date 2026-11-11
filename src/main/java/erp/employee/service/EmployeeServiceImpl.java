@@ -155,4 +155,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         throw new GlobalException(ErrorStatus.NOT_FOUND_EMPLOYEE);
     }
 
+
+    @Override
+    @Transactional(readOnly = true)
+    public long findActiveEmployeeIdByAccountUuid(String accountUuid, long tenantId) {
+        return employeeMapper.findActiveEmployeeIdByAccountUuid(tenantId, accountUuid)
+                .orElseThrow(() -> new GlobalException(ErrorStatus.NOT_FOUND_EMPLOYEE));
+    }
 }

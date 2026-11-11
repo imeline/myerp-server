@@ -25,10 +25,11 @@ public class OutboundController {
      * 출고 등록 (출고 + 현재, 예약 재고 차감 + 주문 상태 전이)
      */
     @PostMapping
-    public ApiResponse<Long> saveOutbound(@Valid @RequestBody OutboundSaveRequest request) {
+    public ApiResponse<Long> saveOutbound(@Valid @RequestBody OutboundSaveRequest request,
+                                          @AuthenticationPrincipal UserPrincipal principal) {
         long tenantId = TenantContext.get();
         return ApiResponse.onSuccess(
-                outboundService.saveOutbound(request, tenantId));
+                outboundService.saveOutbound(request, tenantId, principal.getUuid()));
     }
 
     /**

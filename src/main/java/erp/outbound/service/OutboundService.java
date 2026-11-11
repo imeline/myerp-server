@@ -6,7 +6,7 @@ import erp.outbound.dto.request.OutboundSaveRequest;
 import erp.outbound.dto.response.OutboundFindAllResponse;
 
 public interface OutboundService {
-    long saveOutbound(OutboundSaveRequest request, long tenantId);
+    long saveOutbound(OutboundSaveRequest request, long tenantId, String accountUuid);
 
     PageResponse<OutboundFindAllResponse> findAllOutbound(
             OutboundFindAllRequest request,

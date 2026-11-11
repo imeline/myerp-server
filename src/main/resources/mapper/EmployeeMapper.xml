@@ -180,6 +180,25 @@
         <include refid="frag.tenantGuard"/>
     </select>
 
+    <!-- 로그인 계정(uuid)의 재직 중인 사원 ID (삭제된 계정·퇴사자는 없음) -->
+    <select id="findActiveEmployeeIdByAccountUuid" resultType="Long">
+        SELECT e.employee_id
+        FROM erp_account a
+        JOIN employee e
+        ON e.employee_id = a.employee_id
+        WHERE a.uuid = #{accountUuid}
+        AND a.deleted_at IS NULL
+        AND e.status = 'ACTIVE'
+        AND
+        <include refid="frag.tenantGuardAlias">
+            <property name="alias" value="a"/>
+        </include>
+        AND
+        <include refid="frag.tenantGuardAlias">
+            <property name="alias" value="e"/>
+        </include>
+    </select>
+
     <select id="existsActiveById" resultType="boolean">
         SELECT CASE WHEN COUNT(1) > 0 THEN 1 ELSE 0 END
         FROM employee

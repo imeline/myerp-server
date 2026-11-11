@@ -8,8 +8,6 @@ public record InboundSaveRequest(
         @NotNull
         Long purchaseId,
         @NotNull
-        LocalDate inboundDate,
-        @NotNull
-        Long employeeId
+        LocalDate inboundDate
 ) {
 }

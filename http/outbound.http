@@ -9,8 +9,7 @@ Accept: application/json
 
 {
   "outboundDate": "2025-09-07",
-  "orderId": 7,
-  "employeeId": 6
+  "orderId": 7
 }
 
 

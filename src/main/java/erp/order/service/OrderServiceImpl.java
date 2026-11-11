@@ -1,6 +1,6 @@
 package erp.order.service;
 
-import erp.employee.validation.EmployeeValidator;
+import erp.employee.service.EmployeeService;
 import erp.global.exception.ErrorStatus;
 import erp.global.exception.GlobalException;
 import erp.global.response.PageResponse;
@@ -49,24 +49,23 @@ public class OrderServiceImpl implements OrderService {
     private final StockService stockService;
 
     private final OrderValidator orderValidator;
-    private final EmployeeValidator employeeValidator;
+    private final EmployeeService employeeService;
     private final ItemValidator itemValidator;
 
     @Auditable(type = LogType.WORK,
             messageEl = "'주문 등록: customer=' + #args[0].customer() + ', items=' + #args[0].items().size()")
     @Override
     @Transactional
-    public long saveOrderAndOrderItems(OrderSaveRequest request, long tenantId) {
+    public long saveOrderAndOrderItems(OrderSaveRequest request, long tenantId, String accountUuid) {
         String customer = Strings.normalizeOrNull(request.customer());
         LocalDate orderDate = request.orderDate();
-        long employeeId = request.employeeId();
+        long employeeId = employeeService.findActiveEmployeeIdByAccountUuid(accountUuid, tenantId); // 담당자 = 로그인한 본인 (재직 검증 포함)
         List<OrderItemSaveRequest> requestItems = request.items();
 
         // 1) 중복 금지
         orderValidator.validItemIdsUniqueInRequest(requestItems);
 
         // 2) 존재성 검증
-        employeeValidator.validEmployeeIdIfPresent(employeeId, tenantId);
         List<Long> itemIds = requestItems.stream().map(OrderItemSaveRequest::itemId).toList();
         itemValidator.validItemIdsIfPresent(itemIds, tenantId);
 

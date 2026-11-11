@@ -14,7 +14,7 @@ import java.util.List;
 public interface PurchaseService {
 
     long savePurchaseAndPurchaseItems(
-            PurchaseSaveRequest request, long tenantId);
+            PurchaseSaveRequest request, long tenantId, String accountUuid);
 
     PageResponse<PurchaseFindAllResponse> findAllPurchase(
             PurchaseFindAllRequest request, long tenantId);

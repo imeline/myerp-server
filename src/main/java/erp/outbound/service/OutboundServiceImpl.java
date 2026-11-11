@@ -1,6 +1,6 @@
 package erp.outbound.service;
 
-import erp.employee.validation.EmployeeValidator;
+import erp.employee.service.EmployeeService;
 import erp.global.exception.ErrorStatus;
 import erp.global.exception.GlobalException;
 import erp.global.response.PageResponse;
@@ -45,20 +45,19 @@ public class OutboundServiceImpl implements OutboundService {
     private final StockService stockService;
 
     private final OutboundValidator outboundValidator;
-    private final EmployeeValidator employeeValidator;
+    private final EmployeeService employeeService;
     private final OrderValidator orderValidator;
 
     @Auditable(type = LogType.WORK,
-            messageEl = "'출고 등록: orderId=' + #args[0].orderId() + ', date=' + #args[0].outboundDate() + ', emp=' + #args[0].employeeId()")
+            messageEl = "'출고 등록: orderId=' + #args[0].orderId() + ', date=' + #args[0].outboundDate()")
     @Override
     @Transactional
-    public long saveOutbound(OutboundSaveRequest request, long tenantId) {
+    public long saveOutbound(OutboundSaveRequest request, long tenantId, String accountUuid) {
         LocalDate outboundDate = request.outboundDate();
         long orderId = request.orderId();
-        long employeeId = request.employeeId();
+        long employeeId = employeeService.findActiveEmployeeIdByAccountUuid(accountUuid, tenantId); // 담당자 = 로그인한 본인 (재직 검증 포함)
 
         orderValidator.validOrderIdIfPresent(orderId, tenantId);
-        employeeValidator.validEmployeeIdIfPresent(employeeId, tenantId);
 
         // 1) 주문 품목 수량 조회
         List<OrderItemQuantityRow> itemRows =

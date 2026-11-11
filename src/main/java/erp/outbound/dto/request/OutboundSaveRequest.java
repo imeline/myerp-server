@@ -10,9 +10,6 @@ public record OutboundSaveRequest(
         LocalDate outboundDate,
 
         @NotNull
-        Long orderId,
-
-        @NotNull
-        Long employeeId
+        Long orderId
 ) {
 }

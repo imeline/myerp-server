@@ -1,6 +1,6 @@
 package erp.inbound.service;
 
-import erp.employee.validation.EmployeeValidator;
+import erp.employee.service.EmployeeService;
 import erp.global.exception.ErrorStatus;
 import erp.global.exception.GlobalException;
 import erp.global.response.PageResponse;
@@ -43,20 +43,19 @@ public class InboundServiceImpl implements InboundService {
     private final StockService stockService;
     private final PurchaseService purchaseService;
     private final InboundValidator inboundValidator;
-    private final EmployeeValidator employeeValidator;
+    private final EmployeeService employeeService;
     private final PurchaseValidator purchaseValidator;
 
     @Auditable(type = LogType.WORK,
-            messageEl = "'입고 등록: purchaseId=' + #args[0].purchaseId() + ', date=' + #args[0].inboundDate() + ', emp=' + #args[0].employeeId()")
+            messageEl = "'입고 등록: purchaseId=' + #args[0].purchaseId() + ', date=' + #args[0].inboundDate()")
     @Override
     @Transactional
-    public long saveInbound(InboundSaveRequest request, long tenantId) {
+    public long saveInbound(InboundSaveRequest request, long tenantId, String accountUuid) {
         LocalDate inboundDate = request.inboundDate();
         long purchaseId = request.purchaseId();
-        long employeeId = request.employeeId();
+        long employeeId = employeeService.findActiveEmployeeIdByAccountUuid(accountUuid, tenantId); // 담당자 = 로그인한 본인 (재직 검증 포함)
 
         purchaseValidator.validPurchaseIdIfPresent(purchaseId, tenantId);
-        employeeValidator.validEmployeeIdIfPresent(employeeId, tenantId);
 
         // 1) 발주 품목 수량 조회
         List<PurchaseItemQuantityRow> itemRows =

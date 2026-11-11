@@ -1,7 +1,7 @@
 // PurchaseServiceImpl.java
 package erp.purchase.service;
 
-import erp.employee.validation.EmployeeValidator;
+import erp.employee.service.EmployeeService;
 import erp.global.exception.ErrorStatus;
 import erp.global.exception.GlobalException;
 import erp.global.response.PageResponse;
@@ -48,7 +48,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     private final ItemService itemService;
 
-    private final EmployeeValidator employeeValidator;
+    private final EmployeeService employeeService;
     private final ItemValidator itemValidator;
     private final PurchaseValidator purchaseValidator;
 
@@ -56,17 +56,14 @@ public class PurchaseServiceImpl implements PurchaseService {
             messageEl = "'발주 등록: supplier=' + #args[0].supplier() + ', items=' + #args[0].items().size()")
     @Override
     @Transactional
-    public long savePurchaseAndPurchaseItems(PurchaseSaveRequest request, long tenantId) {
+    public long savePurchaseAndPurchaseItems(PurchaseSaveRequest request, long tenantId, String accountUuid) {
         String supplier = Strings.normalizeOrNull(request.supplier());
         LocalDate purchaseDate = request.purchaseDate();
-        Long employeeId = request.employeeId();
+        long employeeId = employeeService.findActiveEmployeeIdByAccountUuid(accountUuid, tenantId); // 담당자 = 로그인한 본인 (재직 검증 포함)
         List<PurchaseItemSaveRequest> requestItems = request.items();
 
         // 1) 요청 DTO 내 itemId 중복 검사 (동일 품목 중복 방지)
         purchaseValidator.validItemIdsUniqueInRequest(requestItems);
-
-        // 2) 직원 존재, 활성 유효성 검사 (회사 스코프 내)
-        employeeValidator.validEmployeeIdIfPresent(employeeId, tenantId);
 
         // 3) 아이템 단가 일괄 조회 (N+1 제거)
         List<Long> itemIds = requestItems.stream()

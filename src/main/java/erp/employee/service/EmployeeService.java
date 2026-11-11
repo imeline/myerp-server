@@ -23,4 +23,7 @@ public interface EmployeeService {
     void updateEmployee(long employeeId, EmployeeUpdateRequest request, long tenantId);
 
     void retireEmployee(long employeeId, long tenantId);
+
+    /** 로그인 계정(uuid)의 재직 중인 사원 ID. 없으면(삭제·퇴사) NOT_FOUND_EMPLOYEE */
+    long findActiveEmployeeIdByAccountUuid(String accountUuid, long tenantId);
 }

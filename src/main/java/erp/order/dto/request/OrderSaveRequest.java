@@ -18,9 +18,6 @@ public record OrderSaveRequest(
 
         @NotNull
         @Size(min = 1)
-        List<OrderItemSaveRequest> items,
-
-        @Positive
-        long employeeId
+        List<OrderItemSaveRequest> items
 ) {
 }

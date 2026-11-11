@@ -10,7 +10,6 @@ Accept: application/json
 {
   "purchaseDate": "2025-09-02",
   "supplier": "위메프",
-  "employeeId": 8,
   "items": [
     {
       "itemId": 5,

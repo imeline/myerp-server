@@ -12,8 +12,6 @@ public record PurchaseSaveRequest(
         LocalDate purchaseDate,
         @NotBlank
         String supplier,
-        @NotNull
-        Long employeeId,
         @NotEmpty
         @Valid
         List<PurchaseItemSaveRequest> items

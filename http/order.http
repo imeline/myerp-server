@@ -10,7 +10,6 @@ Accept: application/json
 {
   "orderDate": "2025-09-05",
   "customer": "스타트업A",
-  "employeeId": 6,
   "items": [
     {
       "itemId": 5,

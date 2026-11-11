@@ -30,10 +30,11 @@ public class OrderController {
      * 주문 등록 (주문 + 주문아이템 저장)
      */
     @PostMapping
-    public ApiResponse<Long> saveOrderAndItems(@Valid @RequestBody OrderSaveRequest request) {
+    public ApiResponse<Long> saveOrderAndItems(@Valid @RequestBody OrderSaveRequest request,
+                                               @AuthenticationPrincipal UserPrincipal principal) {
         long tenantId = TenantContext.get();
         return ApiResponse.onSuccess(
-                orderService.saveOrderAndOrderItems(request, tenantId));
+                orderService.saveOrderAndOrderItems(request, tenantId, principal.getUuid()));
     }
 
     /**

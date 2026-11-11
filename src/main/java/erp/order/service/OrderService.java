@@ -13,7 +13,7 @@ import erp.order.enums.OrderStatus;
 import java.util.List;
 
 public interface OrderService {
-    long saveOrderAndOrderItems(OrderSaveRequest request, long tenantId);
+    long saveOrderAndOrderItems(OrderSaveRequest request, long tenantId, String accountUuid);
 
     PageResponse<OrderFindAllResponse> findAllOrder(
             OrderFindAllRequest request, long tenantId);
