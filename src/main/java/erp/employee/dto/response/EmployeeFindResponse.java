@@ -7,9 +7,9 @@ import lombok.Builder;
 public record EmployeeFindResponse(
         String name,
         String empNo,
-        long departmentId,
+        Long departmentId,   // 부서·직급 미지정 직원은 null
         String departmentName,
-        long positionId,
+        Long positionId,
         String positionName,
         String phone
 ) {

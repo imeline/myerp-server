@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 /**
  * 회사를 지정하는 계정 등록 요청
  * - SYS가 ADMIN·SYS 계정을 등록할 때 사용. SYS는 여러 회사를 관리하므로 대상 회사를 body로 받는다.
+ * - 부서·직급은 선택 입력 (SYS는 회사의 부서·직급을 조회할 권한이 없음). 보내면 그 회사에 있는지 검증한다.
  */
 public record SignupWithCompanyRequest(
         @NotBlank
@@ -32,9 +33,7 @@ public record SignupWithCompanyRequest(
                 message = "전화번호는 0XX-XXXX-XXXX 형식이어야 합니다."
         )
         String phone,
-        @NotNull
         Long departmentId,
-        @NotNull
         Long positionId,
         @NotNull
         Long companyId

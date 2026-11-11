@@ -13,7 +13,8 @@
         INSERT INTO employee (employee_id, emp_no, name, phone, status,
                               department_id, position_id, company_id)
         VALUES (#{employeeId}, #{empNo}, #{name}, #{phone}, #{status},
-                #{departmentId}, #{positionId}, #{companyId})
+                #{departmentId, jdbcType=NUMERIC}, #{positionId, jdbcType=NUMERIC}, <!-- null 허용 -->
+                #{companyId})
     </insert>
 
     <select id="findAllIdAndName" resultType="EmployeeIdAndNameRow">

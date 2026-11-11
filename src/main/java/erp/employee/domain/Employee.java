@@ -20,8 +20,8 @@ public class Employee extends TimeStamped {
 
     public static Employee register(Long employeeId,
                                     String empNo, String name, String phone,
-                                    EmployeeStatus status, long departmentId,
-                                    long positionId, long companyId
+                                    EmployeeStatus status, Long departmentId,
+                                    Long positionId, long companyId // 부서·직급은 null 허용 (SYS의 관리자 등록)
     ) {
         return Employee.builder()
                 .employeeId(employeeId)
