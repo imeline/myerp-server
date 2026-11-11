@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -59,9 +60,7 @@ public class GlobalExceptionHandler {
     public ApiResponse<?> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
                                                        HttpServletRequest request,
                                                        HttpServletResponse response) {
-        String message = ex.getBindingResult().getFieldErrors().stream()
-                .map(e -> e.getField() + ": " + e.getDefaultMessage())
-                .collect(Collectors.joining(", "));
+        String message = toFieldErrorMessage(ex.getBindingResult());
         log.warn("400 BadRequest(MethodArgumentNotValid) url: {}, detail: {}", request.getRequestURI(), message);
 
         response.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -75,13 +74,22 @@ public class GlobalExceptionHandler {
     public ApiResponse<?> handleBindException(BindException ex,
                                               HttpServletRequest request,
                                               HttpServletResponse response) {
-        String message = ex.getBindingResult().getFieldErrors().stream()
-                .map(e -> e.getField() + ": " + e.getDefaultMessage())
-                .collect(Collectors.joining(", "));
+        String message = toFieldErrorMessage(ex.getBindingResult());
         log.warn("400 BadRequest(BindException) url: {}, detail: {}", request.getRequestURI(), message);
 
         response.setStatus(HttpStatus.BAD_REQUEST.value());
         return ApiResponse.onFailure(ErrorStatus.BAD_REQUEST, message);
+    }
+
+    /**
+     * field error 목록 → "field: message, field: message"
+     * - 타입 변환 실패(query string의 잘못된 enum·숫자 등)는 내부 클래스명이 담긴
+     *   기본 메시지 대신 고정 문구로 내려준다.
+     */
+    private String toFieldErrorMessage(BindingResult bindingResult) {
+        return bindingResult.getFieldErrors().stream()
+                .map(e -> e.getField() + ": " + (e.isBindingFailure() ? "올바르지 않은 값입니다." : e.getDefaultMessage()))
+                .collect(Collectors.joining(", "));
     }
 
     /**

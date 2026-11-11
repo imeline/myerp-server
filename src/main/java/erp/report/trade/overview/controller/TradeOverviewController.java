@@ -7,8 +7,9 @@ import erp.report.trade.overview.dto.response.TradeOverviewReportResponse;
 import erp.report.trade.overview.service.TradeOverviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +22,7 @@ public class TradeOverviewController {
 
     @GetMapping
     public ApiResponse<TradeOverviewReportResponse> getOverview(
-            @Valid @RequestBody TradeOverviewReportFindRequest request
+            @Valid @ParameterObject @ModelAttribute TradeOverviewReportFindRequest request
     ) {
         long tenantId = TenantContext.get();
         return ApiResponse.onSuccess(tradeOverviewService.findTradeOverview(request, tenantId));

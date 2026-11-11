@@ -12,6 +12,7 @@ import erp.order.dto.response.OrderItemsSummaryResponse;
 import erp.order.service.OrderService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class OrderController {
      */
     @GetMapping
     public ApiResponse<PageResponse<OrderFindAllResponse>> findAllOrders(
-            @Valid @RequestBody OrderFindAllRequest request
+            @Valid @ParameterObject @ModelAttribute OrderFindAllRequest request
     ) {
         long tenantId = TenantContext.get();
         return ApiResponse.onSuccess(

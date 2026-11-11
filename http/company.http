@@ -19,14 +19,8 @@ Authorization: {{accessToken}}
 Content-Type: application/json
 
 ###  여러개 회사 조회 (페이징, 검색 조건)
-GET {{base}}
+GET {{base}}?page=0&size=10
 Authorization: {{accessToken}}
-Content-Type: application/json
-
-{
-  "page": 0,
-  "size": 10
-}
 
 ### 회사 수정
 PUT {{base}}/6

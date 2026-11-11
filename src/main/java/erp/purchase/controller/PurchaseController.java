@@ -12,6 +12,7 @@ import erp.purchase.dto.response.PurchaseItemsSummaryResponse;
 import erp.purchase.service.PurchaseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class PurchaseController {
      */
     @GetMapping
     public ApiResponse<PageResponse<PurchaseFindAllResponse>> findAllPurchases(
-            @Valid @RequestBody PurchaseFindAllRequest request
+            @Valid @ParameterObject @ModelAttribute PurchaseFindAllRequest request
     ) {
         long tenantId = TenantContext.get();
         return ApiResponse.onSuccess(

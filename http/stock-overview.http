@@ -1,12 +1,7 @@
 @base = {{host}}/user/report/stock/overview
 
 ### 재고 리포트(월별) — 2024년 12월
-GET {{base}}
+GET {{base}}?year=2024&month=12
 Authorization: {{accessToken}}
-Content-Type: application/json
 Accept: application/json
 
-{
-  "year": 2024,
-  "month": 12
-}

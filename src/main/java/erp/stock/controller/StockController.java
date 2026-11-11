@@ -12,6 +12,7 @@ import erp.stock.dto.response.StockSummaryFindResponse;
 import erp.stock.service.StockService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,7 +27,7 @@ public class StockController {
      */
     @GetMapping
     public ApiResponse<PageResponse<StockFindAllResponse>> findAllStocks(
-            @Valid @RequestBody StockFindAllRequest request
+            @Valid @ParameterObject @ModelAttribute StockFindAllRequest request
     ) {
         long tenantId = TenantContext.get();
         return ApiResponse.onSuccess(
@@ -51,7 +52,7 @@ public class StockController {
     @GetMapping("{itemId}/movement")
     public ApiResponse<StockMovementFindAllResponse> findMovements(
             @PathVariable long itemId,
-            @Valid @RequestBody StockMovementFindRequest request
+            @Valid @ParameterObject @ModelAttribute StockMovementFindRequest request
     ) {
         long tenantId = TenantContext.get();
         return ApiResponse.onSuccess(stockService.findAllMovement(itemId, request, tenantId));

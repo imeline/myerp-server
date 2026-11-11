@@ -9,6 +9,7 @@ import erp.inbound.dto.response.InboundFindAllResponse;
 import erp.inbound.service.InboundService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,7 +27,7 @@ public class InboundController {
 
     @GetMapping
     public ApiResponse<PageResponse<InboundFindAllResponse>> findAllInbound(
-            @Valid @RequestBody InboundFindAllRequest request) {
+            @Valid @ParameterObject @ModelAttribute InboundFindAllRequest request) {
         long tenantId = TenantContext.get();
         return ApiResponse.onSuccess(inboundService.findAllInbound(request, tenantId));
     }

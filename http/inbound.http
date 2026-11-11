@@ -12,16 +12,8 @@ Content-Type: application/json
 }
 
 ### 2) 입고 목록 조회 (기간/코드 검색 + 페이징)
-GET {{base}}
+GET {{base}}?period=LAST_30_DAYS&code=IB-2025&page=0&size=20
 Authorization: {{accessToken}}
-Content-Type: application/json
-
-{
-  "period": "LAST_30_DAYS",
-  "code": "IB-2025",
-  "page": 0,
-  "size": 20
-}
 
 ### 3) 입고 취소 (CANCELED 전이 + 재고 롤백 + 발주 CONFIRMED)
 DELETE {{base}}/5

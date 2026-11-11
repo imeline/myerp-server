@@ -11,6 +11,7 @@ import erp.global.response.ApiResponse;
 import erp.global.response.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class EmployeeController {
 
     @GetMapping
     public ApiResponse<PageResponse<EmployeeFindAllResponse>> findAllEmployees(
-            @Valid @RequestBody EmployeeFindAllRequest request) {
+            @Valid @ParameterObject @ModelAttribute EmployeeFindAllRequest request) {
         long tenantId = TenantContext.get();
         return ApiResponse.onSuccess(
                 employeeService.findAllEmployees(request, tenantId));

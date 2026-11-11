@@ -12,6 +12,7 @@ import erp.item.dto.response.ItemOptionResponse;
 import erp.item.service.ItemService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class ItemController {
 
     @GetMapping
     public ApiResponse<PageResponse<ItemFindResponse>> findAllItem(
-            @Valid @RequestBody ItemFindAllRequest request) {
+            @Valid @ParameterObject @ModelAttribute ItemFindAllRequest request) {
         long tenantId = TenantContext.get();
         return ApiResponse.onSuccess(itemService.findAllItems(request, tenantId));
     }

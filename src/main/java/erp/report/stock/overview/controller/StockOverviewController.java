@@ -7,8 +7,9 @@ import erp.report.stock.overview.dto.response.StockOverviewResponse;
 import erp.report.stock.overview.service.StockOverviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +22,7 @@ public class StockOverviewController {
 
     @GetMapping
     public ApiResponse<StockOverviewResponse> getOverview(
-            @Valid @RequestBody StockOverviewFindRequest request
+            @Valid @ParameterObject @ModelAttribute StockOverviewFindRequest request
     ) {
         long tenantId = TenantContext.get();
         return ApiResponse.onSuccess(stockOverviewService.findStockOverview(request, tenantId));

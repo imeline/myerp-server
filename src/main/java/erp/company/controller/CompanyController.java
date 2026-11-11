@@ -10,6 +10,7 @@ import erp.global.response.ApiResponse;
 import erp.global.response.PageResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -31,7 +32,7 @@ public class CompanyController {
 
     @GetMapping
     public ApiResponse<PageResponse<CompanyFindResponse>> findAllCompany(
-            @Valid @RequestBody CompanyFindAllRequest request
+            @Valid @ParameterObject @ModelAttribute CompanyFindAllRequest request
     ) {
         return ApiResponse.onSuccess(companyService.findAllCompany(request));
     }

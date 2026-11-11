@@ -1,50 +1,22 @@
 @base = {{host}}/user/report/trade/overview
 
 ### 매출·매입 리포트(Trade Overview) — 전체 연도
-GET {{base}}
+GET {{base}}?year=2025&fromMonth=1&toMonth=12
 Authorization: {{accessToken}}
-Content-Type: application/json
 Accept: application/json
-
-{
-  "year": 2025,
-  "fromMonth": 1,
-  "toMonth": 12
-}
 
 ### 매출·매입 리포트 — 특정 구간(3~6월)
-GET {{base}}
+GET {{base}}?year=2025&fromMonth=3&toMonth=6
 Authorization: {{accessToken}}
-Content-Type: application/json
 Accept: application/json
-
-{
-  "year": 2025,
-  "fromMonth": 3,
-  "toMonth": 6
-}
 
 ### 매출·매입 리포트 — 분기 구간(7~9월)
-GET {{base}}
+GET {{base}}?year=2024&fromMonth=7&toMonth=9
 Authorization: {{accessToken}}
-Content-Type: application/json
 Accept: application/json
-
-{
-  "year": 2024,
-  "fromMonth": 7,
-  "toMonth": 9
-}
 
 ### (검증 확인) 잘못된 월 범위(fromMonth > toMonth) → 400 기대
-GET {{base}}
+GET {{base}}?year=2025&fromMonth=8&toMonth=2
 Authorization: {{accessToken}}
-Content-Type: application/json
 Accept: application/json
-
-{
-  "year": 2025,
-  "fromMonth": 8,
-  "toMonth": 2
-}
 

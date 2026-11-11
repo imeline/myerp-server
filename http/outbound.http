@@ -15,31 +15,14 @@ Accept: application/json
 
 
 ### 출고 목록 조회 (기간/코드 검색 + 페이징)
-GET {{base}}
+GET {{base}}?page=0&size=20&period=LAST_30_DAYS&code=OB-2025-
 Authorization: {{accessToken}}
-Content-Type: application/json
 Accept: application/json
-
-{
-  "page": 0,
-  "size": 20,
-  "period": "LAST_30_DAYS",
-  "code": "OB-2025-"
-}
-
 
 ### 출고 목록 조회 (최근 7일, 코드 필터 없음)
-GET {{base}}
+GET {{base}}?page=0&size=10&period=LAST_7_DAYS
 Authorization: {{accessToken}}
-Content-Type: application/json
 Accept: application/json
-
-{
-  "page": 0,
-  "size": 10,
-  "period": "LAST_7_DAYS"
-}
-
 
 ### 특정 출고 취소 (아래 35를 실제 outbound_id로 교체)
 DELETE {{base}}/3
