@@ -193,9 +193,6 @@ public class PurchaseServiceImpl implements PurchaseService {
                 pageParam.offset(),
                 pageParam.size()
         );
-        if (rows.isEmpty()) {
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_PURCHASE);
-        }
 
         List<PurchaseFindAllResponse> responses = rows.stream()
                 .map(PurchaseFindAllResponse::from)
@@ -240,10 +237,6 @@ public class PurchaseServiceImpl implements PurchaseService {
     public List<PurchaseCodeAndSupplierResponse> findAllPurchaseCodeAndSupplier(long tenantId) {
         List<PurchaseCodeAndSupplierRow> rows =
                 purchaseMapper.findAllCodeAndSupplier(tenantId);
-
-        if (rows.isEmpty()) {
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_PURCHASE);
-        }
 
         return rows.stream()
                 .map(PurchaseCodeAndSupplierResponse::from)

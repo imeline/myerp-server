@@ -100,9 +100,6 @@ public class ItemServiceImpl implements ItemService {
         List<ItemFindRow> rows = itemMapper.findAllItemFindRow(
                 tenantId, name, category, pageParam.offset(), pageParam.size());
 
-        if (rows.isEmpty())
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_ITEM);
-
         List<ItemFindResponse> responses = rows.stream()
                 .map(ItemFindResponse::from)
                 .toList();
@@ -115,8 +112,6 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     public List<ItemOptionResponse> findAllItemOption(long tenantId) {
         List<ItemOptionRow> rows = itemMapper.findAllItemOptionRow(tenantId);
-        if (rows.isEmpty())
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_ITEM);
         return rows.stream()
                 .map(ItemOptionResponse::from)
                 .toList();

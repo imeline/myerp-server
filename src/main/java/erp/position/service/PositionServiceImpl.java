@@ -55,9 +55,6 @@ public class PositionServiceImpl implements PositionService {
         List<PositionFindAllResponse> list = positionMapper.findAll(tenantId).stream()
                 .map(PositionFindAllResponse::from)
                 .toList();
-        if (list.isEmpty()) {
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_POSITION);
-        }
         return list;
     }
 

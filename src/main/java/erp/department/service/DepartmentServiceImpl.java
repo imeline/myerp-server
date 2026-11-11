@@ -84,9 +84,6 @@ public class DepartmentServiceImpl implements DepartmentService {
         List<DepartmentInfoResponse> list =
                 departmentMapper.findAllTopLevelDepartmentRow(tenantId)
                         .stream().map(DepartmentInfoResponse::from).toList();
-        if (list.isEmpty()) {
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_DEPARTMENT);
-        }
         return list;
     }
 
@@ -96,9 +93,6 @@ public class DepartmentServiceImpl implements DepartmentService {
         List<DepartmentInfoResponse> list =
                 departmentMapper.findAllDepartmentRowByParentId(tenantId, parentId)
                         .stream().map(DepartmentInfoResponse::from).toList();
-        if (list.isEmpty()) {
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_DEPARTMENT);
-        }
         return list;
     }
 

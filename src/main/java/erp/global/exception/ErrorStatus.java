@@ -37,7 +37,6 @@ public enum ErrorStatus {
     DELETE_ERP_ACCOUNT_FAIL("ERP202", "계정 삭제에 실패했습니다."),
 
     // EMPLOYEE
-    NOT_REGISTERED_EMPLOYEE("EMP301", "등록된 직원이 없습니다."),
     DUPLICATE_EMP_NO("EMP302", "이미 등록된 사번입니다."),
     DUPLICATE_PHONE("EMP303", "이미 등록된 전화번호입니다."),
     CREATE_EMPLOYEE_FAIL("EMP304", "직원 생성에 실패했습니다."),
@@ -53,7 +52,6 @@ public enum ErrorStatus {
     UPDATE_COMPANY_FAIL("COMP405", "회사 수정에 실패했습니다."),
     DELETE_COMPANY_FAIL("COMP406", "회사를 찾을 수 없거나 이미 삭제된 회사입니다."),
     EXTERNAL_DATA_EXISTS("COMP407", "연관된 데이터가 존재하여 삭제할 수 없습니다."),
-    NOT_REGISTERED_COMPANY("COMP408", "등록된 회사가 없습니다."),
     CANNOT_DELETE_COMPANY_HAS_RELATION("COMP409", "연관된 데이터가 존재하여 회사를 삭제할 수 없습니다."),
 
     // DEPARTMENT
@@ -65,7 +63,6 @@ public enum ErrorStatus {
     NO_FOUND_PARENT_DEPARTMENT("DPT506", "유효하지 않은 상위 부서입니다."), EXIST_EMPLOYEE_IN_DEPARTMENT(
             "DPT507", "해당 부서에 속한 직원이 존재합니다."),
     EXIST_CHILD_DEPARTMENT("DPT508", "하위 부서가 존재하여 삭제할 수 없습니다."),
-    NOT_REGISTERED_DEPARTMENT("DPT509", "등록된 부서가 없습니다."),
 
     // POSITION
     DUPLICATE_POSITION_NAME("POS601", "이미 등록된 직급명입니다."),
@@ -74,7 +71,6 @@ public enum ErrorStatus {
     UPDATE_POSITION_FAIL("POS604", "직급 수정에 실패했습니다."),
     DELETE_POSITION_FAIL("POS605", "직급을 찾을 수 없거나 이미 삭제된 직급입니다."),
     EXIST_EMPLOYEE_IN_POSITION("POS606", "해당 직급에 속한 직원이 존재합니다."),
-    NOT_REGISTERED_POSITION("POS607", "등록된 직급이 없습니다."),
 
     // ITEM
     CREATE_ITEM_FAIL("ITEM701", "품목 생성에 실패했습니다."),
@@ -83,7 +79,6 @@ public enum ErrorStatus {
     DELETE_ITEM_FAIL("ITEM704", "품목을 찾을 수 없거나 이미 삭제된 품목입니다."),
     DUPLICATE_ITEM_NAME("ITEM705", "이미 등록된 품목명입니다."),
     DUPLICATE_ITEM_CODE("ITEM706", "이미 등록된 품목 코드입니다."),
-    NOT_REGISTERED_ITEM("ITEM707", "등록된 품목이 없습니다."),
     DUPLICATE_ITEM("ITEM708", "중복된 품목이 있습니다."),
     NOT_FOUND_ITEM_PRICE("ITEM709", "품목에 대한 가격 정보가 없습니다."),
     CANNOT_DELETE_ITEM_STOCK_NOT_ZERO("ITEM710", "재고 수량이 0이 아닌 품목은 삭제할 수 없습니다."),
@@ -91,7 +86,6 @@ public enum ErrorStatus {
     // STOCK
     INVALID_STOCK_QUANTITY("STK801", "재고 수량은 0 이상이어야 합니다."),
     CREATE_STOCK_FAIL("STK802", "재고 생성에 실패했습니다."),
-    NOT_REGISTERED_STOCK("STK803", "등록된 재고가 없습니다."),
     NOT_FOUND_STOCK("STK804", "존재하지 않는 재고입니다."),
     DECREASE_STOCK_ALLOCATED_FAIL("STK806", "예약 재고 감소에 실패했습니다."),
     INCREASE_STOCK_ALLOCATED_FAIL("STK807", "예약 재고 증가에 실패했습니다."),
@@ -101,11 +95,9 @@ public enum ErrorStatus {
     CREATE_PURCHASE_ITEM_FAIL("PUR902", "발주 품목 생성에 실패했습니다."),
     NOT_FOUND_PURCHASE("PUR903", "존재하지 않는 발주입니다."),
     INVALID_PURCHASE_STATUS("PUR904", "유효하지 않은 발주 상태입니다."),
-    NOT_REGISTERED_PURCHASE("PUR905", "등록된 발주가 없습니다."),
     NOT_FOUND_PURCHASE_ITEM("PUR906", "존재하지 않는 발주 품목입니다."),
     CANNOT_CANCEL_SHIPPED_PURCHASE("PUR907", "입고된 발주는 취소할 수 없습니다."),
     CANCEL_PURCHASE_FAIL("PUR908", "발주 취소에 실패했습니다."),
-    NOT_REGISTERED_PURCHASE_ITEM("PUR909", "등록된 발주 품목이 없습니다."),
     CANNOT_SHIP_CANCELED_PURCHASE("PUR910", "취소된 발주는 입고 처리할 수 없습니다."),
     ALREADY_SHIPPED_PURCHASE("PUR911", "이미 입고 처리된 발주입니다."),
     UPDATE_PURCHASE_STATUS_FAIL("PUR912", "발주 상태 변경에 실패했습니다."),
@@ -114,7 +106,6 @@ public enum ErrorStatus {
 
     // INBOUND
     CREATE_INBOUND_FAIL("INB1001", "입고 생성에 실패했습니다."),
-    NOT_REGISTERED_INBOUND("INB1002", "등록된 입고가 없습니다."),
     NOT_FOUND_INBOUND("INB1003", "존재하지 않는 입고입니다."),
     INBOUND_NOT_ACTIVE("INB1004", "활성 상태가 아닌 입고입니다."),
     CANCEL_INBOUND_FAIL("INB1005", "입고 취소에 실패했습니다."),
@@ -122,7 +113,6 @@ public enum ErrorStatus {
     // ORDER
     CREATE_ORDER_FAIL("ORD1101", "주문 생성에 실패했습니다."),
     CREATE_ORDER_ITEM_FAIL("ORD1102", "주문 품목 생성에 실패했습니다."),
-    NOT_REGISTERED_ORDER("ORD1103", "등록된 주문이 없습니다."),
     NOT_FOUND_ORDER_ITEM("ORD1104", "존재하지 않는 주문 품목입니다."),
     NOT_FOUND_ORDER("ORD1105", "존재하지 않는 주문입니다."),
     CANNOT_CANCEL_SHIPPED_ORDER("ORD1106", "출고된 주문은 취소할 수 없습니다."),
@@ -136,7 +126,6 @@ public enum ErrorStatus {
 
     // OUTBOUND
     CREATE_OUTBOUND_FAIL("OUT1201", "출고 생성에 실패했습니다."),
-    NOT_REGISTERED_OUTBOUND("OUT1202", "등록된 출고가 없습니다."),
     UPDATE_OUTBOUND_STAUS_FAIL("OUT1203", "출고 상태 변경에 실패했습니다."),
     NOT_FOUND_OUTBOUND("OUT1204", "존재하지 않는 출고입니다."),
     CANNOT_DELETE_ITEM_BY_CONFIRMED_PURCHASE("ITEM711", "열린 상태 발주에서 참조된 품목은 삭제할 수 없습니다."),

@@ -91,8 +91,6 @@ public class StockServiceImpl implements StockService {
                 tenantId,
                 filter
         );
-        if (rows.isEmpty())
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_STOCK);
 
         long totalCount = stockMapper.countByStock(
                 tenantId,
@@ -200,6 +198,10 @@ public class StockServiceImpl implements StockService {
 
         StockMovementSummaryRow summaryFromDatabase =
                 stockMapper.findMovementSummary(tenantId, filter);
+        // 해당 테넌트에 없는 품목이면 요약 행이 null → NPE(500) 대신 NOT_FOUND_ITEM
+        if (summaryFromDatabase == null) {
+            throw new GlobalException(ErrorStatus.NOT_FOUND_ITEM);
+        }
         StockMovementSummaryRow summary = StockMovementSummaryRow.from(summaryFromDatabase);
 
 

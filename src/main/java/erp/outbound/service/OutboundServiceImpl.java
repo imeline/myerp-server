@@ -135,9 +135,6 @@ public class OutboundServiceImpl implements OutboundService {
                 pageParam.offset(),
                 pageParam.size()
         );
-        if (rows.isEmpty()) {
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_OUTBOUND);
-        }
 
         List<OutboundFindAllResponse> responses = rows.stream()
                 .map(OutboundFindAllResponse::from)

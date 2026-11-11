@@ -67,8 +67,6 @@ public class CompanyServiceImpl implements CompanyService {
         String name = normalizeOrNull(request.name());
 
         List<CompanyFindRow> rows = companyMapper.findAllCompanyRow(name, pageParam.offset(), pageParam.size());
-        if (rows.isEmpty())
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_COMPANY);
 
         List<CompanyFindResponse> responses = rows.stream()
                 .map(CompanyFindResponse::from)

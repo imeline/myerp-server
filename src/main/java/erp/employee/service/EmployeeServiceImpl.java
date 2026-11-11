@@ -75,10 +75,6 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<EmployeeIdAndNameRow> employeeIdAndNameRows =
                 employeeMapper.findAllIdAndName(tenantId);
 
-        if (employeeIdAndNameRows.isEmpty()) {
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_EMPLOYEE);
-        }
-
         return employeeIdAndNameRows.stream()
                 .map(EmployeeIdAndNameResponse::from)
                 .toList();
@@ -96,10 +92,6 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         List<EmployeeFindAllRow> rows = employeeMapper.findAllEmployeeFindRow(
                 tenantId, departmentId, positionId, name, pageParam.offset(), pageParam.size());
-
-        if (rows.isEmpty()) {
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_EMPLOYEE);
-        }
 
         List<EmployeeFindAllResponse> responses = rows.stream()
                 .map(EmployeeFindAllResponse::from)

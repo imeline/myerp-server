@@ -131,9 +131,6 @@ public class InboundServiceImpl implements InboundService {
                 pageParam.offset(),
                 pageParam.size()
         );
-        if (rows.isEmpty()) {
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_INBOUND);
-        }
 
         List<InboundFindAllResponse> responses = rows.stream()
                 .map(InboundFindAllResponse::from)

@@ -182,9 +182,6 @@ public class OrderServiceImpl implements OrderService {
                 pageParam.offset(),
                 pageParam.size()
         );
-        if (rows.isEmpty()) {
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_ORDER);
-        }
 
         List<OrderFindAllResponse> responses = rows.stream()
                 .map(OrderFindAllResponse::from)
@@ -228,9 +225,6 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public List<OrderCodeAndCustomerResponse> findAllOrderCodeAndCustomer(long tenantId) {
         List<OrderCodeAndCustomerRow> rows = orderMapper.findAllCodeAndCustomer(tenantId);
-        if (rows.isEmpty()) {
-            throw new GlobalException(ErrorStatus.NOT_REGISTERED_ORDER);
-        }
         return rows.stream()
                 .map(OrderCodeAndCustomerResponse::from)
                 .toList();
