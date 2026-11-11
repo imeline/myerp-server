@@ -48,6 +48,16 @@
         OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
     </select>
 
+    <!-- 회사 선택 옵션: 삭제 제외, 이름순 -->
+    <select id="findAllCompanyOptionRow" resultType="CompanyOptionRow">
+        SELECT
+        company_id AS companyId,
+        name AS name
+        FROM company
+        WHERE deleted_at IS NULL
+        ORDER BY name ASC, company_id ASC
+    </select>
+
     <select id="countByName" resultType="long">
         SELECT COUNT(*)
         FROM company

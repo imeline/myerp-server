@@ -108,6 +108,18 @@
         <include refid="frag.tenantGuard"/>
     </update>
 
+    <!-- 이름·사번·연락처만 수정 (관리자 계정 수정용, 부서·직급은 그대로) -->
+    <update id="updateBasicInfoById">
+        UPDATE employee
+        SET emp_no = #{empNo},
+        name = #{name},
+        phone = #{phone}
+        WHERE employee_id = #{employeeId}
+        AND status != 'RETIRED'
+        AND
+        <include refid="frag.tenantGuard"/>
+    </update>
+
     <update id="updateStatusToRetired">
         UPDATE employee
         SET status = 'RETIRED'

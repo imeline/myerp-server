@@ -12,6 +12,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
+import erp.company.dto.response.CompanyOptionResponse;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/sys/company")
@@ -23,6 +25,14 @@ public class CompanyController {
     @PostMapping
     public ApiResponse<Long> saveCompany(@Valid @RequestBody CompanySaveRequest request) {
         return ApiResponse.onSuccess(companyService.saveCompany(request));
+    }
+
+    /**
+     * 회사 선택 옵션 (관리자 계정 등록 화면 등)
+     */
+    @GetMapping("/options")
+    public ApiResponse<List<CompanyOptionResponse>> findAllCompanyOption() {
+        return ApiResponse.onSuccess(companyService.findAllCompanyOption());
     }
 
     @GetMapping("/{companyId}")

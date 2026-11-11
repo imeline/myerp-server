@@ -140,6 +140,20 @@ public class EmployeeServiceImpl implements EmployeeService {
         requireOneRowAffected(affectedRowCount, ErrorStatus.UPDATE_EMPLOYEE_FAIL);
     }
 
+    @Override
+    @Transactional
+    public void updateEmployeeBasicInfo(long employeeId, String name, String empNo, String phone,
+                                        long tenantId) {
+        String normalizedEmpNo = normalizeOrNull(empNo);
+        String normalizedPhone = normalizeOrNull(phone);
+        employeeValidator.validEmpNoUnique(normalizedEmpNo, tenantId, employeeId);
+        employeeValidator.validPhoneUnique(normalizedPhone, tenantId, employeeId);
+
+        int affectedRowCount = employeeMapper.updateBasicInfoById(
+                tenantId, employeeId, normalizeOrNull(name), normalizedEmpNo, normalizedPhone);
+        requireOneRowAffected(affectedRowCount, ErrorStatus.UPDATE_EMPLOYEE_FAIL);
+    }
+
     @Auditable(type = LogType.WORK, messageEl = "'직원 퇴사 처리: id=' + #args[0] + ', tenant=' + #args[1]")
     @Override
     @Transactional

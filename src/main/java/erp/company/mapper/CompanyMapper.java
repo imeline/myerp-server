@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Optional;
+import erp.company.dto.internal.CompanyOptionRow;
 
 @Mapper
 public interface CompanyMapper {
@@ -30,6 +31,9 @@ public interface CompanyMapper {
     );
 
     long countByName(@Param("name") String name);
+
+    /** 회사 선택 옵션 (삭제 제외, 이름순) */
+    List<CompanyOptionRow> findAllCompanyOptionRow();
 
     int softDeleteById(@Param("companyId") Long companyId);
 

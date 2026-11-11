@@ -33,6 +33,29 @@ Content-Type: application/json
   "companyId": 1
 }
 
+### ADMIN 계정 목록 (SYS 토큰 필요, 회사명·이름 부분 검색)
+GET {{host}}/sys/admin?companyName=에이원&name=admin&page=0&size=20
+Authorization: {{accessToken}}
+
+### ADMIN 계정 단건 (SYS 토큰 필요)
+GET {{host}}/sys/admin/4
+Authorization: {{accessToken}}
+
+### ADMIN 계정 수정 - 이름·사번·연락처 (SYS 토큰 필요, 회사·이메일은 변경 불가)
+PUT {{host}}/sys/admin/4
+Authorization: {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "테스트관리자",
+  "empNo": "TADM1111",
+  "phone": "010-9111-1111"
+}
+
+### ADMIN 계정 삭제 - 사원 퇴사 + 계정 소프트 삭제 (SYS 토큰 필요)
+DELETE {{host}}/sys/admin/999
+Authorization: {{accessToken}}
+
 ### USER(사원) 등록 (ADMIN 토큰 필요, 회사는 토큰 기준이라 companyId 없음)
 POST {{host}}/admin/employee
 Authorization: {{accessToken}}

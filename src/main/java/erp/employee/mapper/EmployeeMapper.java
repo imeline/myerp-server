@@ -33,6 +33,13 @@ public interface EmployeeMapper {
     int updateById(@Param("tenantId") long tenantId,
                    @Param("employee") Employee employee);
 
+    /** 이름·사번·연락처만 수정 (부서·직급은 그대로) */
+    int updateBasicInfoById(@Param("tenantId") long tenantId,
+                            @Param("employeeId") long employeeId,
+                            @Param("name") String name,
+                            @Param("empNo") String empNo,
+                            @Param("phone") String phone);
+
     int updateStatusToRetired(@Param("tenantId") long tenantId,
                               @Param("employeeId") long employeeId);
 

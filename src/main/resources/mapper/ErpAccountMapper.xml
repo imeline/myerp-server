@@ -57,4 +57,68 @@
     AND
     <include refid="frag.tenantGuard"/>
   </update>
+
+  <!-- ===== 관리자(ADMIN) 계정 목록 - SYS 전용 (삭제된 계정·삭제된 회사 제외) ===== -->
+
+  <sql id="adminFrom">
+    FROM erp_account a
+    JOIN employee e
+    ON e.employee_id = a.employee_id
+    AND e.company_id = a.company_id
+    JOIN company c
+    ON c.company_id = a.company_id
+    WHERE a.role = 'ADMIN'
+    AND a.deleted_at IS NULL
+    AND c.deleted_at IS NULL
+    <if test="companyName != null">
+      AND INSTR(LOWER(c.name), LOWER(#{companyName})) > 0
+    </if>
+    <if test="name != null">
+      AND INSTR(LOWER(e.name), LOWER(#{name})) > 0
+    </if>
+  </sql>
+
+  <!-- 주의: SELECT 순서를 AdminFindAllRow 필드 순서와 맞출 것 (record는 순서로 매핑) -->
+  <select id="findAllAdminFindAllRow" resultType="AdminFindAllRow">
+    SELECT
+    a.erp_account_id AS erpAccountId,
+    e.employee_id AS employeeId,
+    e.name AS name,
+    a.login_email AS loginEmail,
+    c.company_id AS companyId,
+    c.name AS companyName,
+    e.phone AS phone,
+    TO_CHAR(a.created_at, 'YYYY.MM.DD') AS createdAt
+    <include refid="adminFrom"/>
+    ORDER BY a.created_at DESC, a.erp_account_id DESC
+    OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
+  </select>
+
+  <!-- 단건 (수정 모달·수정·삭제 대상 확인). 주의: SELECT 순서를 AdminFindRow 필드 순서와 맞출 것 -->
+  <select id="findAdminFindRowById" resultType="AdminFindRow">
+    SELECT
+    a.erp_account_id AS erpAccountId,
+    e.employee_id AS employeeId,
+    e.name AS name,
+    e.emp_no AS empNo,
+    a.login_email AS loginEmail,
+    c.company_id AS companyId,
+    c.name AS companyName,
+    e.phone AS phone,
+    TO_CHAR(a.created_at, 'YYYY.MM.DD') AS createdAt
+    FROM erp_account a
+    JOIN employee e
+    ON e.employee_id = a.employee_id
+    AND e.company_id = a.company_id
+    JOIN company c
+    ON c.company_id = a.company_id
+    WHERE a.erp_account_id = #{erpAccountId}
+    AND a.role = 'ADMIN'
+    AND a.deleted_at IS NULL
+  </select>
+
+  <select id="countAdmin" resultType="long">
+    SELECT COUNT(*)
+    <include refid="adminFrom"/>
+  </select>
 </mapper>

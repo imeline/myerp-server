@@ -35,6 +35,7 @@ public enum ErrorStatus {
     // ERP ACCOUNT
     CREATE_ERP_ACCOUNT_FAIL("ERP201", "계정 생성에 실패했습니다."),
     DELETE_ERP_ACCOUNT_FAIL("ERP202", "계정 삭제에 실패했습니다."),
+    NOT_FOUND_ADMIN("ERP203", "존재하지 않는 관리자 계정입니다."),
 
     // EMPLOYEE
     DUPLICATE_EMP_NO("EMP302", "이미 등록된 사번입니다."),

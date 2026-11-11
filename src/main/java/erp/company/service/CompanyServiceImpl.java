@@ -24,6 +24,7 @@ import java.util.List;
 
 import static erp.global.util.RowCountGuards.requireOneRowAffected;
 import static erp.global.util.Strings.normalizeOrNull;
+import erp.company.dto.response.CompanyOptionResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -106,5 +107,13 @@ public class CompanyServiceImpl implements CompanyService {
         }
         int affectedRowCount = companyMapper.softDeleteById(companyId);
         requireOneRowAffected(affectedRowCount, ErrorStatus.DELETE_COMPANY_FAIL);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CompanyOptionResponse> findAllCompanyOption() {
+        return companyMapper.findAllCompanyOptionRow().stream()
+                .map(CompanyOptionResponse::from)
+                .toList();
     }
 }

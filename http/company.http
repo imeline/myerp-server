@@ -18,6 +18,10 @@ GET {{base}}/5
 Authorization: {{accessToken}}
 Content-Type: application/json
 
+### 회사 선택 옵션 (삭제 제외, 이름순)
+GET {{base}}/options
+Authorization: {{accessToken}}
+
 ###  여러개 회사 조회 (페이징, 검색 조건)
 GET {{base}}?page=0&size=10
 Authorization: {{accessToken}}
