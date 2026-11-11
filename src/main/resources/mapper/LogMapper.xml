@@ -38,7 +38,70 @@
     <delete id="deleteOlderThan">
         DELETE FROM log
         WHERE type = #{type}
-        AND SYSTIMESTAMP - NUMTODSINTERVAL(#{days}, 'DAY') > created_at
+        AND CAST(SYSTIMESTAMP AS TIMESTAMP) - NUMTODSINTERVAL(#{days}, 'DAY') > created_at <!-- 시간대 없는 created_at과 비교하려고 CAST -->
     </delete>
+
+    <!-- ===== 시스템 로그 조회 (ADMIN, 자기 회사, 접속(ACCESS) 로그 제외) ===== -->
+
+    <sql id="logSearchWhere">
+        WHERE type != 'ACCESS'
+        AND <include refid="frag.tenantGuard"/>
+        <if test="filter.type != null">
+            AND type = #{filter.type}
+        </if>
+        <if test="filter.successYn != null">
+            AND success = #{filter.successYn}
+        </if>
+        <if test="filter.employeeName != null">
+            AND INSTR(LOWER(employee_name), LOWER(#{filter.employeeName})) > 0
+        </if>
+        <if test="filter.keyword != null">
+            AND INSTR(LOWER(message), LOWER(#{filter.keyword})) > 0
+        </if>
+        <if test="filter.startDate != null">
+            AND created_at >= #{filter.startDate}
+        </if>
+        <if test="filter.endDateExclusive != null">
+            AND #{filter.endDateExclusive} > created_at
+        </if>
+    </sql>
+
+    <!-- 주의: SELECT 순서를 LogFindAllRow 필드 순서와 맞출 것 (record는 순서로 매핑) -->
+    <select id="findAllLogFindAllRow" resultType="LogFindAllRow">
+        SELECT
+        log_id AS logId,
+        TO_CHAR(created_at, 'YYYY-MM-DD HH24:MI:SS') AS createdAt,
+        employee_name AS employeeName,
+        type AS type,
+        success AS success,
+        message AS message,
+        ip_address AS ipAddress
+        FROM log
+        <include refid="logSearchWhere"/>
+        ORDER BY created_at DESC, log_id DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
+    </select>
+
+    <select id="countByFilters" resultType="long">
+        SELECT COUNT(*)
+        FROM log
+        <include refid="logSearchWhere"/>
+    </select>
+
+    <!-- 상단 카드. 주의: SELECT 순서를 LogSummaryRow 필드 순서와 맞출 것 -->
+    <select id="findLogSummaryRow" resultType="LogSummaryRow">
+        SELECT
+        NVL(SUM(CASE WHEN created_at >= TRUNC(SYSDATE) AND success = 'Y' THEN 1 ELSE 0 END), 0) AS todaySuccessCount,
+        NVL(SUM(CASE WHEN created_at >= TRUNC(SYSDATE) AND success = 'N' THEN 1 ELSE 0 END), 0) AS todayFailCount,
+        COUNT(DISTINCT CASE
+                       WHEN created_at >= TRUNC(SYSDATE) AND type = 'LOGIN' AND success = 'Y'
+                       THEN employee_uuid
+                       END) AS todayLoginUserCount,
+        NVL(SUM(CASE WHEN type = 'WORK' AND created_at >= CAST(SYSTIMESTAMP AS TIMESTAMP) - INTERVAL '1' HOUR THEN 1 ELSE 0 END), 0) AS recentWorkCount
+        FROM log
+        WHERE type != 'ACCESS'
+        AND <include refid="frag.tenantGuard"/>
+        AND created_at >= TRUNC(SYSDATE) - 1 <!-- 오늘 + 자정 직후의 "최근 1시간"까지 포함 -->
+    </select>
 
 </mapper>

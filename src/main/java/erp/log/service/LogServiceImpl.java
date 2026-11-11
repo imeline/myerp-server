@@ -7,7 +7,13 @@ import erp.global.context.TenantContext;
 import erp.global.exception.ErrorStatus;
 import erp.global.util.SensitiveMasker;
 import erp.log.domain.Log;
+import erp.global.response.PageResponse;
+import erp.global.util.PageParam;
+import erp.log.dto.internal.LogSearchFilter;
+import erp.log.dto.request.LogFindAllRequest;
 import erp.log.dto.request.LogSaveRequest;
+import erp.log.dto.response.LogFindAllResponse;
+import erp.log.dto.response.LogSummaryFindResponse;
 import erp.log.mapper.LogMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +23,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static erp.global.util.RowCountGuards.requireOneRowAffected;
 
@@ -35,12 +43,46 @@ public class LogServiceImpl implements LogService {
     public void save(LogSaveRequest request) {
         UserPrincipal principal = currentUserOrNull();
         Long tenantId = resolveTenantId(principal);
-
-        String ip = RequestContext.ip();
-        String requestId = RequestContext.requestId();
-
         String employeeUuid = principal != null ? principal.getUuid() : null;
         String employeeName = principal != null ? principal.getName() : null;
+        saveInternal(request, tenantId, employeeUuid, employeeName);
+    }
+
+    /**
+     * 회사·사용자를 직접 지정해서 저장
+     * - 로그인·토큰 재발급처럼 아직 인증 정보(토큰)가 없는 시점에 사용
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void saveAs(LogSaveRequest request, Long tenantId, String employeeUuid, String employeeName) {
+        saveInternal(request, tenantId, employeeUuid, employeeName);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<LogFindAllResponse> findAllLog(LogFindAllRequest request, long tenantId) {
+        PageParam pageParam = PageParam.of(request.page(), request.size(), 20);
+        LogSearchFilter filter = LogSearchFilter.from(request);
+
+        List<LogFindAllResponse> responses = logMapper
+                .findAllLogFindAllRow(tenantId, filter, pageParam.offset(), pageParam.size())
+                .stream()
+                .map(LogFindAllResponse::from)
+                .toList();
+        long total = logMapper.countByFilters(tenantId, filter);
+
+        return PageResponse.of(responses, pageParam.page(), total, pageParam.size());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public LogSummaryFindResponse findSummary(long tenantId) {
+        return LogSummaryFindResponse.from(logMapper.findLogSummaryRow(tenantId));
+    }
+
+    private void saveInternal(LogSaveRequest request, Long tenantId, String employeeUuid, String employeeName) {
+        String ip = RequestContext.ip();
+        String requestId = RequestContext.requestId();
 
         String json = toSafeJson(request.payload());
 
