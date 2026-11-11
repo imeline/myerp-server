@@ -44,8 +44,8 @@ public class AuthServiceImpl implements AuthService {
     @Auditable(type = LogType.WORK, messageEl = "'회원가입 처리: ' + #args[0].loginEmail() + ' / ' + #args[0].name()")
     @Override
     @Transactional
-    public void signup(SignupRequest request, ErpAccountRole role) {
-        companyValidator.validCompanyIdIfPresent(request.companyId());
+    public void signup(SignupRequest request, long companyId, ErpAccountRole role) {
+        companyValidator.validCompanyIdIfPresent(companyId);
         // Employee 생성
         EmployeeSaveRequest employeeSaveRequest =
                 EmployeeSaveRequest.of(
@@ -55,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
                         request.departmentId(),
                         request.positionId()
                 );
-        long employeeId = employeeService.saveEmployee(employeeSaveRequest, request.companyId());
+        long employeeId = employeeService.saveEmployee(employeeSaveRequest, companyId);
 
         // ErpAccount 생성
         ErpAccountSaveRequest erpAccountSaveRequest =
@@ -65,7 +65,7 @@ public class AuthServiceImpl implements AuthService {
                         request.password(),
                         role
                 );
-        erpAccountService.saveErpAccount(erpAccountSaveRequest, request.companyId());
+        erpAccountService.saveErpAccount(erpAccountSaveRequest, companyId);
     }
 
     @Auditable(type = LogType.LOGIN, messageEl = "'로그인 처리: ' + #args[0].loginEmail()")

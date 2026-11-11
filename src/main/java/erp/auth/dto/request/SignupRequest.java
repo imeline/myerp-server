@@ -6,6 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+/**
+ * 계정 등록 요청 (회사 정보 없음)
+ * - ADMIN이 자기 회사 사원(USER)을 등록할 때 사용. companyId는 토큰(TenantContext)에서 꺼낸다.
+ */
 public record SignupRequest(
         @NotBlank
         @Email(message = "올바른 이메일 형식이어야 합니다.")
@@ -32,9 +36,7 @@ public record SignupRequest(
         @NotNull
         Long departmentId,
         @NotNull
-        Long positionId,
-        @NotNull
-        Long companyId
+        Long positionId
 ) {
 
 }

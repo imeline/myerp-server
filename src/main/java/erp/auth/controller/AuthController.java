@@ -1,9 +1,7 @@
 package erp.auth.controller;
 
-import erp.account.enums.ErpAccountRole;
 import erp.auth.dto.request.LoginRequest;
 import erp.auth.dto.request.RefreshTokenRequest;
-import erp.auth.dto.request.SignupRequest;
 import erp.auth.dto.response.LoginResponse;
 import erp.auth.security.model.UserPrincipal;
 import erp.auth.service.AuthService;
@@ -23,27 +21,9 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/signup/sys")
-    public ApiResponse<Void> signupSys(@Valid @RequestBody SignupRequest request) {
-        // 역할 지정 위치 - controller vs service vs 프론트 요청 dto
-        // * sevice가 안되는 이유 -> 서비스는 “어떤 역할인지”에 대해서는 관심을 두지 않고,
-        // 그 역할에 맞는 가입 로직만 수행하도록 만들면 관심사가 분리해야 함
-        // * 프론트 요청이 안되는 이유 -> 악의적인 사용자가 요청 바디를 조작 가능. 보안상 위험
-        authService.signup(request, ErpAccountRole.SYS);
-        return ApiResponse.onSuccess(null);
-    }
-
-    @PostMapping("/signup/admin")
-    public ApiResponse<Void> signupAdmin(@Valid @RequestBody SignupRequest request) {
-        authService.signup(request, ErpAccountRole.ADMIN);
-        return ApiResponse.onSuccess(null);
-    }
-
-    @PostMapping("/signup/user")
-    public ApiResponse<Void> signupUser(@Valid @RequestBody SignupRequest request) {
-        authService.signup(request, ErpAccountRole.USER);
-        return ApiResponse.onSuccess(null);
-    }
+    // 계정 등록은 역할별 경로로 이동
+    // - SYS·ADMIN 계정: POST /api/v1/sys/sys-account, /api/v1/sys/admin (SysAccountController, SYS 전용)
+    // - USER 계정:      POST /api/v1/admin/employee (EmployeeController, ADMIN 전용, 회사는 토큰 기준)
 
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request) {

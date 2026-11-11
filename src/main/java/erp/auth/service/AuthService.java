@@ -7,7 +7,11 @@ import erp.auth.dto.request.SignupRequest;
 import erp.auth.dto.response.LoginResponse;
 
 public interface AuthService {
-    void signup(SignupRequest dto, ErpAccountRole role);
+    /**
+     * 계정(직원 + ERP 계정) 등록
+     * @param companyId 등록할 회사. 호출하는 쪽(컨트롤러)이 권한에 맞게 정해서 넘긴다.
+     */
+    void signup(SignupRequest dto, long companyId, ErpAccountRole role);
 
     LoginResponse login(LoginRequest dto);
 

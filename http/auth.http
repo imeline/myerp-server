@@ -1,8 +1,9 @@
 ### 환경 변수
 @base = {{host}}/auth
 
-### SYS 회원가입
-POST {{base}}/signup/sys
+### SYS 계정 등록 (SYS 토큰 필요)
+POST {{host}}/sys/sys-account
+Authorization: {{accessToken}}
 Content-Type: application/json
 
 {
@@ -16,8 +17,9 @@ Content-Type: application/json
   "companyId": 1
 }
 
-### ADMIN 회원가입
-POST {{base}}/signup/admin
+### ADMIN 계정 등록 (SYS 토큰 필요)
+POST {{host}}/sys/admin
+Authorization: {{accessToken}}
 Content-Type: application/json
 
 {
@@ -26,13 +28,14 @@ Content-Type: application/json
   "empNo": "AD345",
   "name": "admin3",
   "phone": "010-3333-5678",
-  "departmentId": 3,
+  "departmentId": 1,
   "positionId": 4,
-  "companyId": 2
+  "companyId": 1
 }
 
-### USER 회원가입
-POST {{base}}/signup/user
+### USER(사원) 등록 (ADMIN 토큰 필요, 회사는 토큰 기준이라 companyId 없음)
+POST {{host}}/admin/employee
+Authorization: {{accessToken}}
 Content-Type: application/json
 
 {
@@ -42,8 +45,7 @@ Content-Type: application/json
   "name": "user2",
   "phone": "010-2344-5678",
   "departmentId": 3,
-  "positionId": 4,
-  "companyId": 2
+  "positionId": 4
 }
 
 ### SYS 로그인
@@ -60,7 +62,7 @@ POST {{base}}/login
 Content-Type: application/json
 
 {
-  "loginEmail": "admin2@naver.com",
+  "loginEmail": "admin3@naver.com",
   "password": "123456"
 }
 
