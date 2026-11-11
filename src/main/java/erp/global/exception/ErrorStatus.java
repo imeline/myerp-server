@@ -20,7 +20,7 @@ public enum ErrorStatus {
 
     // AUTH
     DUPLICATE_LOGIN_EMAIL("AUTH101", "기존 사용중인 이메일입니다."),
-    INVALID_LOGIN_CREDENTIALS("AUTH102", "아이디 또는 비밀번호가 일치하지 않습니다."),
+    INVALID_LOGIN_CREDENTIALS("AUTH102", "이메일 또는 비밀번호가 일치하지 않습니다."),
     NOT_FOUND_TENANT_ID("AUTH103", "테넌트 ID가 설정되지 않았습니다."),
     SIGNUP_FAIL("AUTH104", "회원가입에 실패했습니다."),
     NOT_FOUND_ERP_ACCOUNT("AUTH105", "계정을 찾을 수 없습니다."),

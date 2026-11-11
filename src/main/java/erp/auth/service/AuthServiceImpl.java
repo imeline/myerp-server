@@ -93,7 +93,7 @@ public class AuthServiceImpl implements AuthService {
             throw ex;
         }
 
-        // 아이디 또는 비밀번호 가 잘못된 경우 예외 처리
+        // 이메일 또는 비밀번호가 잘못된 경우 예외 처리
         if (!passwordEncoder.matches(request.password(), row.passwordHash())) {
             GlobalException ex = new GlobalException(ErrorStatus.INVALID_LOGIN_CREDENTIALS);
             saveAuthLog(false, "로그인 실패(비밀번호 불일치): " + email, row.tenantId(), row.uuid(), row.name(), ex);
