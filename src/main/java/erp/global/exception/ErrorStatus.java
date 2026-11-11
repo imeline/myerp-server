@@ -103,12 +103,14 @@ public enum ErrorStatus {
     UPDATE_PURCHASE_STATUS_FAIL("PUR912", "발주 상태 변경에 실패했습니다."),
     CANNOT_REVERT_CANCELED_PURCHASE("PUR913", "취소된 발주는 상태를 되돌릴 수 없습니다."),
     ALREADY_CONFIRMED_PURCHASE("PUR914", "이미 확정 상태의 발주입니다."),
+    ALREADY_CANCELED_PURCHASE("PUR915", "이미 취소된 발주입니다."),
 
     // INBOUND
     CREATE_INBOUND_FAIL("INB1001", "입고 생성에 실패했습니다."),
     NOT_FOUND_INBOUND("INB1003", "존재하지 않는 입고입니다."),
     INBOUND_NOT_ACTIVE("INB1004", "활성 상태가 아닌 입고입니다."),
     CANCEL_INBOUND_FAIL("INB1005", "입고 취소에 실패했습니다."),
+    ALREADY_CANCELED_INBOUND("INB1006", "이미 취소된 입고입니다."),
 
     // ORDER
     CREATE_ORDER_FAIL("ORD1101", "주문 생성에 실패했습니다."),
@@ -128,6 +130,7 @@ public enum ErrorStatus {
     CREATE_OUTBOUND_FAIL("OUT1201", "출고 생성에 실패했습니다."),
     UPDATE_OUTBOUND_STAUS_FAIL("OUT1203", "출고 상태 변경에 실패했습니다."),
     NOT_FOUND_OUTBOUND("OUT1204", "존재하지 않는 출고입니다."),
+    ALREADY_CANCELED_OUTBOUND("OUT1205", "이미 취소된 출고입니다."),
     CANNOT_DELETE_ITEM_BY_CONFIRMED_PURCHASE("ITEM711", "열린 상태 발주에서 참조된 품목은 삭제할 수 없습니다."),
     CANNOT_DELETE_ITEM_BY_CONFIRMED_ORDER("ITEM712", "열린 상태 주문에서 참조된 품목은 삭제할 수 없습니다."),
 

@@ -4,6 +4,8 @@ import erp.inbound.dto.internal.InboundFindAllRow;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import erp.inbound.enums.InboundStatus;
 
 @Builder
 public record InboundFindAllResponse(
@@ -14,7 +16,10 @@ public record InboundFindAllResponse(
         long purchaseId,
         String purchaseCode,
         int totalQuantity,
-        int totalAmount
+        int totalAmount,
+        InboundStatus status,
+        LocalDateTime canceledAt,
+        String canceledByName
 ) {
     public static InboundFindAllResponse from(InboundFindAllRow row) {
         return InboundFindAllResponse.builder()
@@ -26,6 +31,9 @@ public record InboundFindAllResponse(
                 .purchaseCode(row.purchaseCode())
                 .totalQuantity(row.totalQuantity())
                 .totalAmount(row.totalAmount())
+                .status(row.status())
+                .canceledAt(row.canceledAt())
+                .canceledByName(row.canceledByName())
                 .build();
     }
 }

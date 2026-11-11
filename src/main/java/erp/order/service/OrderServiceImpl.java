@@ -233,8 +233,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(readOnly = true)
     public OrderDetailResponse findOrderDetail(long orderId, long tenantId) {
-        orderValidator.validOrderIdIfPresent(orderId, tenantId);
-
+        // 취소된 주문도 상세 조회 가능 (없으면 아래에서 NOT_FOUND)
         OrderDetailRow header = orderMapper.findOrderDetailRow(tenantId, orderId)
                 .orElseThrow(() -> new GlobalException(ErrorStatus.NOT_FOUND_ORDER));
 
@@ -250,12 +249,12 @@ public class OrderServiceImpl implements OrderService {
             messageEl = "'주문 취소: orderId=' + #args[0]")
     @Override
     @Transactional
-    public void cancelOrder(long orderId, long tenantId) {
-        orderValidator.validOrderIdIfPresent(orderId, tenantId);
+    public void cancelOrder(long orderId, long tenantId, String cancelerUuid) {
+        // 존재 검증을 먼저 하면 이미 취소된 건이 "없음"으로 나오므로, 실패했을 때 상태로 사유를 판정
 
         // 1) 상태 변경: CONFIRMED → CANCELED
-        int affectedRowCount = orderMapper.updateStatusToIfConfirmed(
-                tenantId, orderId, OrderStatus.CANCELED
+        int affectedRowCount = orderMapper.updateStatusToCanceledIfConfirmed(
+                tenantId, orderId, cancelerUuid
         );
         if (affectedRowCount != 1) {
             // 2) 실패 사유 판정

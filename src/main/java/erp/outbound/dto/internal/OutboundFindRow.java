@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import erp.outbound.enums.OutboundStatus;
 
 public record OutboundFindRow(
 
@@ -36,6 +38,12 @@ public record OutboundFindRow(
         String orderCode,
 
         @NotBlank
-        String employeeName
+        String employeeName,
+
+        @NotNull
+        OutboundStatus status,
+
+        LocalDateTime canceledAt,   // 취소 전엔 null
+        String canceledByName       // 취소 전엔 null
 ) {
 }

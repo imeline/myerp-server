@@ -14,5 +14,5 @@ public interface InboundService {
             long tenantId
     );
 
-    void cancelInbound(long inboundId, long tenantId);
+    void cancelInbound(long inboundId, long tenantId, String cancelerUuid);
 }

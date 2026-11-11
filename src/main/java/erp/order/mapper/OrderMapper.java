@@ -37,6 +37,13 @@ public interface OrderMapper {
             @Param("orderId") long orderId
     );
 
+    // 취소: CONFIRMED일 때만 CANCELED + 취소 일시·취소자 기록
+    int updateStatusToCanceledIfConfirmed(
+            @Param("tenantId") long tenantId,
+            @Param("orderId") long orderId,
+            @Param("cancelerUuid") String cancelerUuid
+    );
+
     int updateStatusToIfConfirmed(
             @Param("tenantId") long tenantId,
             @Param("orderId") long orderId,

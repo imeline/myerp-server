@@ -4,6 +4,8 @@ import erp.outbound.dto.internal.OutboundFindRow;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import erp.outbound.enums.OutboundStatus;
 
 @Builder
 public record OutboundFindAllResponse(
@@ -15,7 +17,10 @@ public record OutboundFindAllResponse(
         LocalDate outboundDate,
         Long orderId,
         String orderCode,
-        String employeeName
+        String employeeName,
+        OutboundStatus status,
+        LocalDateTime canceledAt,
+        String canceledByName
 ) {
     public static OutboundFindAllResponse from(OutboundFindRow row) {
         return OutboundFindAllResponse.builder()
@@ -28,6 +33,9 @@ public record OutboundFindAllResponse(
                 .orderId(row.orderId())
                 .orderCode(row.orderCode())
                 .employeeName(row.employeeName())
+                .status(row.status())
+                .canceledAt(row.canceledAt())
+                .canceledByName(row.canceledByName())
                 .build();
     }
 }

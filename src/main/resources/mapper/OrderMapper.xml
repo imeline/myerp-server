@@ -33,17 +33,23 @@
     <select id="findAllOrderFindRow" resultType="OrderFindRow">
         SELECT
         o.order_id AS orderId,
+        o.code AS code,
         o.order_date AS orderDate,
         o.customer AS customer,
         COUNT(DISTINCT oi.item_id) AS itemCount,
         o.total_amount AS totalAmount,
         o.status AS status,
-        e.name AS employeeName
+        e.name AS employeeName,
+        o.canceled_at AS canceledAt,
+        ce.name AS canceledByName
         FROM orders o
         JOIN order_item oi
         ON oi.order_id = o.order_id
         JOIN employee e
         ON e.employee_id = o.employee_id
+        LEFT JOIN employee ce <!-- 취소자 (취소 전엔 NULL) -->
+        ON ce.employee_id = o.canceled_by
+        AND ce.company_id = #{tenantId}
         WHERE 1 = 1
 
         <if test="startDate != null">
@@ -55,7 +61,7 @@
         <if test="code != null">
             AND o.code LIKE '%' || #{code} || '%'
         </if>
-        AND o.status != 'CANCELED'
+        <!-- 상태 필터(선택). 없으면 취소 건도 포함 -->
         <if test="status != null">
             AND o.status = #{status}
         </if>
@@ -74,11 +80,14 @@
 
         GROUP BY
         o.order_id,
+        o.code,
         o.order_date,
         o.customer,
         o.total_amount,
         o.status,
-        e.name
+        e.name,
+        o.canceled_at,
+        ce.name
         ORDER BY
         o.order_date DESC,
         o.order_id DESC
@@ -106,14 +115,19 @@
         e.name AS employeeName,
         COUNT(DISTINCT oi.item_id) AS totalItemCount,
         o.total_quantity AS totalQuantity,
-        o.total_amount AS totalAmount
+        o.total_amount AS totalAmount,
+        o.canceled_at AS canceledAt,
+        ce.name AS canceledByName
         FROM orders o
         JOIN employee e
         ON e.employee_id = o.employee_id
         LEFT JOIN order_item oi
         ON oi.order_id = o.order_id
+        LEFT JOIN employee ce <!-- 취소자 (취소 전엔 NULL) -->
+        ON ce.employee_id = o.canceled_by
+        AND ce.company_id = #{tenantId}
         WHERE o.order_id = #{orderId}
-        AND o.status != 'CANCELED'
+        <!-- 취소 건도 상세 조회 가능 -->
         AND
         <include refid="frag.tenantGuardAlias">
             <property name="alias" value="o"/>
@@ -128,7 +142,7 @@
         </include>
         GROUP BY
         o.code, o.customer, o.order_date, o.status, e.name, o.total_quantity,
-        o.total_amount
+        o.total_amount, o.canceled_at, ce.name
     </select>
 
     <select id="findStatusById" resultType="OrderStatus">
@@ -142,6 +156,21 @@
     <update id="updateStatusToIfConfirmed">
         UPDATE orders
         SET status = #{toStatus}
+        WHERE order_id = #{orderId}
+        AND status = 'CONFIRMED'
+        AND
+        <include refid="frag.tenantGuard"/>
+    </update>
+
+    <!-- 취소: CONFIRMED일 때만. 취소 일시·취소자(로그인 계정의 사원) 기록 -->
+    <update id="updateStatusToCanceledIfConfirmed">
+        UPDATE orders
+        SET status = 'CANCELED',
+        canceled_at = SYSTIMESTAMP,
+        canceled_by = (SELECT a.employee_id
+                       FROM erp_account a
+                       WHERE a.uuid = #{cancelerUuid}
+                       AND a.company_id = #{tenantId})
         WHERE order_id = #{orderId}
         AND status = 'CONFIRMED'
         AND
@@ -171,7 +200,6 @@
         <if test="code != null">
             AND o.code LIKE '%' || #{code} || '%'
         </if>
-        AND o.status != 'CANCELED'
         <if test="status != null">
             AND o.status = #{status}
         </if>

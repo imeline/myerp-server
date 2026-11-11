@@ -132,6 +132,7 @@ public class OutboundServiceImpl implements OutboundService {
                 startDate,
                 endDate,
                 code,
+                request.status(),
                 pageParam.offset(),
                 pageParam.size()
         );
@@ -144,7 +145,8 @@ public class OutboundServiceImpl implements OutboundService {
                 tenantId,
                 startDate,
                 endDate,
-                code
+                code,
+                request.status()
         );
 
         return PageResponse.of(
@@ -159,7 +161,7 @@ public class OutboundServiceImpl implements OutboundService {
             messageEl = "'출고 취소: outboundId=' + #args[0]")
     @Override
     @Transactional
-    public void cancelOutbound(long outboundId, long tenantId) {
+    public void cancelOutbound(long outboundId, long tenantId, String cancelerUuid) {
         // 1) 출고 존재 + ACTIVE 검증
         outboundValidator.validOutboundIdIfPresent(outboundId, tenantId);
 
@@ -182,7 +184,7 @@ public class OutboundServiceImpl implements OutboundService {
         }
 
         // 4) 출고 상태를 CANCELED로 변경 (ACTIVE일 때만)
-        int affectedRowCount = outboundMapper.updateStatusToCanceledIfActive(tenantId, outboundId);
+        int affectedRowCount = outboundMapper.updateStatusToCanceledIfActive(tenantId, outboundId, cancelerUuid);
         requireOneRowAffected(affectedRowCount, ErrorStatus.UPDATE_OUTBOUND_STAUS_FAIL);
 
         // 5) 주문 상태를 SHIPPED → CONFIRMED 로 되돌림

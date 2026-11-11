@@ -5,6 +5,7 @@ import erp.purchase.enums.PurchaseStatus;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Builder
 public record PurchaseFindAllResponse(
@@ -15,7 +16,9 @@ public record PurchaseFindAllResponse(
         int totalAmount,
         LocalDate purchaseDate,
         PurchaseStatus status,
-        String employeeName
+        String employeeName,
+        LocalDateTime canceledAt,
+        String canceledByName
 ) {
 
     public static PurchaseFindAllResponse from(PurchaseFindRow row) {
@@ -28,6 +31,8 @@ public record PurchaseFindAllResponse(
                 .purchaseDate(row.purchaseDate())
                 .status(row.status())
                 .employeeName(row.employeeName())
+                .canceledAt(row.canceledAt())
+                .canceledByName(row.canceledByName())
                 .build(
                 );
     }

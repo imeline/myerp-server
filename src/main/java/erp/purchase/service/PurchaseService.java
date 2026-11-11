@@ -26,7 +26,7 @@ public interface PurchaseService {
 
     PurchaseDetailResponse findPurchaseDetail(long purchaseId, long tenantId);
 
-    void cancelPurchase(long purchaseId, long tenantId);
+    void cancelPurchase(long purchaseId, long tenantId, String cancelerUuid);
 
     List<PurchaseItemQuantityRow> findAllPurchaseItemQuantityRow(long purchaseId, long tenantId);
 

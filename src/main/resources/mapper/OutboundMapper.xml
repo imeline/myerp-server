@@ -36,15 +36,21 @@
         ob.outbound_date AS outboundDate,
         od.order_id AS orderId,
         od.code AS orderCode,
-        e.name AS employeeName
+        e.name AS employeeName,
+        ob.status AS status,
+        ob.canceled_at AS canceledAt,
+        ce.name AS canceledByName
         FROM outbound ob
         JOIN orders od
         ON od.order_id = ob.order_id
         JOIN employee e
         ON e.employee_id = ob.employee_id
+        LEFT JOIN employee ce <!-- 취소자 (취소 전엔 NULL) -->
+        ON ce.employee_id = ob.canceled_by
+        AND ce.company_id = #{tenantId}
         LEFT JOIN order_item oi
         ON oi.order_id = od.order_id
-        WHERE ob.status != 'CANCELED'
+        WHERE 1 = 1
         <if test="startDate != null">
             AND ob.outbound_date >= #{startDate}
         </if>
@@ -54,7 +60,10 @@
         <if test="code != null">
             AND ob.code LIKE '%' || #{code} || '%'
         </if>
-        AND od.status = 'SHIPPED'
+        <!-- 상태 필터(선택). 없으면 취소 건도 포함 -->
+        <if test="status != null">
+            AND ob.status = #{status}
+        </if>
         AND
         <include refid="frag.tenantGuardAlias">
             <property name="alias" value="ob"/>
@@ -74,7 +83,8 @@
 
         GROUP BY
         ob.outbound_id, ob.code, od.customer, od.total_amount,
-        ob.outbound_date, od.order_id, od.code, e.name
+        ob.outbound_date, od.order_id, od.code, e.name,
+        ob.status, ob.canceled_at, ce.name
 
         ORDER BY ob.outbound_date DESC, ob.outbound_id DESC
         OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
@@ -87,7 +97,7 @@
         ON od.order_id = ob.order_id
         JOIN employee e
         ON e.employee_id = ob.employee_id
-        WHERE ob.status != 'CANCELED'
+        WHERE 1 = 1
         <if test="startDate != null">
             AND ob.outbound_date >= #{startDate}
         </if>
@@ -97,7 +107,10 @@
         <if test="code != null">
             AND ob.code LIKE '%' || #{code} || '%'
         </if>
-        AND od.status = 'SHIPPED'
+        <!-- 상태 필터(선택). 없으면 취소 건도 포함 -->
+        <if test="status != null">
+            AND ob.status = #{status}
+        </if>
         AND
         <include refid="frag.tenantGuardAlias">
             <property name="alias" value="ob"/>
@@ -138,14 +151,28 @@
         ORDER BY oi.item_id ASC
     </select>
 
+    <!-- 취소: ACTIVE일 때만. 취소 일시·취소자(로그인 계정의 사원) 기록 -->
     <update id="updateStatusToCanceledIfActive">
         UPDATE outbound
-        SET status = 'CANCELED'
+        SET status = 'CANCELED',
+        canceled_at = SYSTIMESTAMP,
+        canceled_by = (SELECT a.employee_id
+                       FROM erp_account a
+                       WHERE a.uuid = #{cancelerUuid}
+                       AND a.company_id = #{tenantId})
         WHERE outbound_id = #{outboundId}
         AND status = 'ACTIVE'
         AND
         <include refid="frag.tenantGuard"/>
     </update>
+
+    <select id="findStatusById" resultType="OutboundStatus">
+        SELECT status
+        FROM outbound
+        WHERE outbound_id = #{outboundId}
+        AND
+        <include refid="frag.tenantGuard"/>
+    </select>
 
     <select id="existsById" resultType="boolean">
         SELECT CASE WHEN COUNT(1) = 1 THEN 1 ELSE 0 END

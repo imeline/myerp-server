@@ -11,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
+import erp.auth.security.model.UserPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,9 +47,10 @@ public class OutboundController {
      * 출고 취소 — status를 CANCELED로 변경. 재고 롤백 및 주문 상태 되돌림
      */
     @DeleteMapping("/{outboundId}")
-    public ApiResponse<Void> cancelOutbound(@PathVariable long outboundId) {
+    public ApiResponse<Void> cancelOutbound(@PathVariable long outboundId,
+                                            @AuthenticationPrincipal UserPrincipal principal) {
         long tenantId = TenantContext.get();
-        outboundService.cancelOutbound(outboundId, tenantId);
+        outboundService.cancelOutbound(outboundId, tenantId, principal.getUuid());
         return ApiResponse.onSuccess(null);
     }
 }

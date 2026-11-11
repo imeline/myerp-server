@@ -16,6 +16,8 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import erp.auth.security.model.UserPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RestController
 @RequiredArgsConstructor
@@ -81,9 +83,10 @@ public class PurchaseController {
      * 발주 취소(삭제) — status를 CANCELED로 변경. SHIPPED이면 불가
      */
     @DeleteMapping("/{purchaseId}")
-    public ApiResponse<Void> cancelPurchase(@PathVariable Long purchaseId) {
+    public ApiResponse<Void> cancelPurchase(@PathVariable Long purchaseId,
+                                            @AuthenticationPrincipal UserPrincipal principal) {
         long tenantId = TenantContext.get();
-        purchaseService.cancelPurchase(purchaseId, tenantId);
+        purchaseService.cancelPurchase(purchaseId, tenantId, principal.getUuid());
         return ApiResponse.onSuccess(null);
     }
 }

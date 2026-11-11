@@ -11,6 +11,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
+import erp.auth.security.model.UserPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,9 +35,10 @@ public class InboundController {
     }
 
     @DeleteMapping("/{inboundId}")
-    public ApiResponse<Void> cancelInbound(@PathVariable("inboundId") long inboundId) {
+    public ApiResponse<Void> cancelInbound(@PathVariable("inboundId") long inboundId,
+                                           @AuthenticationPrincipal UserPrincipal principal) {
         long tenantId = TenantContext.get();
-        inboundService.cancelInbound(inboundId, tenantId);
+        inboundService.cancelInbound(inboundId, tenantId, principal.getUuid());
         return ApiResponse.onSuccess(null);
     }
 }

@@ -128,6 +128,7 @@ public class InboundServiceImpl implements InboundService {
                 startDate,
                 endDate,
                 code,
+                request.status(),
                 pageParam.offset(),
                 pageParam.size()
         );
@@ -140,7 +141,8 @@ public class InboundServiceImpl implements InboundService {
                 tenantId,
                 startDate,
                 endDate,
-                code
+                code,
+                request.status()
         );
 
         return PageResponse.of(
@@ -155,7 +157,7 @@ public class InboundServiceImpl implements InboundService {
             messageEl = "'입고 취소: inboundId=' + #args[0]")
     @Override
     @Transactional
-    public void cancelInbound(long inboundId, long tenantId) {
+    public void cancelInbound(long inboundId, long tenantId, String cancelerUuid) {
         inboundValidator.validInboundActive(inboundId, tenantId);
 
         List<InboundCancelItemRow> rows = inboundMapper.findAllCancelItemRowById(
@@ -177,7 +179,7 @@ public class InboundServiceImpl implements InboundService {
         }
 
         // 4) 입고 상태를 CANCELED로 변경
-        int affected = inboundMapper.updateStatusToCanceledIfActive(tenantId, inboundId);
+        int affected = inboundMapper.updateStatusToCanceledIfActive(tenantId, inboundId, cancelerUuid);
         requireOneRowAffected(affected, ErrorStatus.CANCEL_INBOUND_FAIL);
 
         // 5) 발주 상태를 CONFIRMED로 되돌림 (SHIPPED → CONFIRMED)

@@ -26,7 +26,7 @@ public interface OrderService {
 
     OrderDetailResponse findOrderDetail(long orderId, long tenantId);
 
-    void cancelOrder(long orderId, long tenantId);
+    void cancelOrder(long orderId, long tenantId, String cancelerUuid);
 
     OrderStatus findStatusById(long orderId, long tenantId);
 

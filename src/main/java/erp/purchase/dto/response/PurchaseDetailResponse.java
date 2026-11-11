@@ -6,6 +6,7 @@ import erp.purchase.enums.PurchaseStatus;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
+import java.time.LocalDateTime;
 
 @Builder
 public record PurchaseDetailResponse(
@@ -17,7 +18,9 @@ public record PurchaseDetailResponse(
         Integer totalItemCount,
         Integer totalQuantity,
         List<PurchaseItemDetailResponse> items,
-        Integer totalAmount
+        Integer totalAmount,
+        LocalDateTime canceledAt,
+        String canceledByName
 ) {
     public static PurchaseDetailResponse of(PurchaseDetailRow row,
                                             List<PurchaseItemDetailRow> itemRows) {
@@ -35,6 +38,8 @@ public record PurchaseDetailResponse(
                 .totalQuantity(row.totalQuantity())
                 .items(items)
                 .totalAmount(row.totalAmount())
+                .canceledAt(row.canceledAt())
+                .canceledByName(row.canceledByName())
                 .build();
     }
 }

@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PositiveOrZero;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import erp.inbound.enums.InboundStatus;
 
 public record InboundFindAllRow(
         @NotNull
@@ -31,6 +33,12 @@ public record InboundFindAllRow(
 
         @NotNull
         @PositiveOrZero
-        Integer totalAmount
+        Integer totalAmount,
+
+        @NotNull
+        InboundStatus status,
+
+        LocalDateTime canceledAt,   // 취소 전엔 null
+        String canceledByName       // 취소 전엔 null
 ) {
 }

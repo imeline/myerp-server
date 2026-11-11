@@ -40,12 +40,17 @@
         p.total_amount AS totalAmount,
         p.purchase_date AS purchaseDate,
         p.status AS status,
-        e.name AS employeeName
+        e.name AS employeeName,
+        p.canceled_at AS canceledAt,
+        ce.name AS canceledByName
         FROM purchase p
         JOIN employee e
         ON e.employee_id = p.employee_id
         JOIN purchase_item pi
         ON pi.purchase_id = p.purchase_id
+        LEFT JOIN employee ce <!-- 취소자 (취소 전엔 NULL) -->
+        ON ce.employee_id = p.canceled_by
+        AND ce.company_id = #{tenantId}
         WHERE 1 = 1
 
         <!-- 기간 시작 -->
@@ -63,10 +68,7 @@
             AND p.code LIKE '%' || #{code} || '%'
         </if>
 
-        <!-- CANCELED 제외(항상) -->
-        AND p.status != 'CANCELED'
-
-        <!-- 상태 필터(선택) -->
+        <!-- 상태 필터(선택). 없으면 취소 건도 포함 -->
         <if test="status != null">
             AND p.status = #{status}
         </if>
@@ -92,7 +94,9 @@
         p.total_amount,
         p.purchase_date,
         p.status,
-        e.name
+        e.name,
+        p.canceled_at,
+        ce.name
         ORDER BY p.purchase_date DESC, p.purchase_id DESC
         OFFSET #{offset} ROWS FETCH NEXT #{size} ROWS ONLY
     </select>
@@ -129,12 +133,17 @@
         AND pi.company_id = #{tenantId}
         ) AS totalQuantity,
         /* 총 금액은 purchase.total_amount 사용 */
-        p.total_amount AS totalAmount
+        p.total_amount AS totalAmount,
+        p.canceled_at AS canceledAt,
+        ce.name AS canceledByName
         FROM purchase p
         JOIN employee e
         ON e.employee_id = p.employee_id
+        LEFT JOIN employee ce <!-- 취소자 (취소 전엔 NULL) -->
+        ON ce.employee_id = p.canceled_by
+        AND ce.company_id = #{tenantId}
         WHERE p.purchase_id = #{purchaseId}
-        AND p.status != 'CANCELED'
+        <!-- 취소 건도 상세 조회 가능 -->
         AND
         <include refid="frag.tenantGuardAlias">
             <property name="alias" value="p"/>
@@ -157,6 +166,21 @@
     <update id="updateStatusToIfConfirmed">
         UPDATE purchase
         SET status = #{to}
+        WHERE purchase_id = #{purchaseId}
+        AND status = 'CONFIRMED'
+        AND
+        <include refid="frag.tenantGuard"/>
+    </update>
+
+    <!-- 취소: CONFIRMED일 때만. 취소 일시·취소자(로그인 계정의 사원) 기록 -->
+    <update id="updateStatusToCanceledIfConfirmed">
+        UPDATE purchase
+        SET status = 'CANCELED',
+        canceled_at = SYSTIMESTAMP,
+        canceled_by = (SELECT a.employee_id
+                       FROM erp_account a
+                       WHERE a.uuid = #{cancelerUuid}
+                       AND a.company_id = #{tenantId})
         WHERE purchase_id = #{purchaseId}
         AND status = 'CONFIRMED'
         AND
@@ -188,7 +212,6 @@
         <if test="status != null">
             AND status = #{status}
         </if>
-        AND status != 'CANCELED'
         AND
         <include refid="frag.tenantGuard"/>
     </select>

@@ -4,6 +4,7 @@ import erp.purchase.enums.PurchaseStatus;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record PurchaseDetailRow(
         @NotNull
@@ -21,6 +22,8 @@ public record PurchaseDetailRow(
         @NotNull
         Integer totalQuantity,
         @NotNull
-        Integer totalAmount
+        Integer totalAmount,
+        LocalDateTime canceledAt,   // 취소 전엔 null
+        String canceledByName       // 취소 전엔 null
 ) {
 }

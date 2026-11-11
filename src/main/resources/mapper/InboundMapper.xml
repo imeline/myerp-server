@@ -35,10 +35,16 @@
         p.purchase_id AS purchaseId,
         p.code AS purchaseCode,
         p.total_quantity AS totalQuantity,
-        p.total_amount AS totalAmount
+        p.total_amount AS totalAmount,
+        i.status AS status,
+        i.canceled_at AS canceledAt,
+        ce.name AS canceledByName
         FROM inbound i
         JOIN purchase p ON p.purchase_id = i.purchase_id
         JOIN employee e ON e.employee_id = i.employee_id
+        LEFT JOIN employee ce <!-- 취소자 (취소 전엔 NULL) -->
+        ON ce.employee_id = i.canceled_by
+        AND ce.company_id = #{tenantId}
         WHERE 1 = 1
         <if test="startDate != null">
             AND i.inbound_date >= #{startDate}
@@ -49,8 +55,10 @@
         <if test="code != null">
             AND i.code LIKE '%' || #{code} || '%'
         </if>
-        AND i.status != 'CANCELED'
-        AND p.status = 'SHIPPED'
+        <!-- 상태 필터(선택). 없으면 취소 건도 포함 -->
+        <if test="status != null">
+            AND i.status = #{status}
+        </if>
         AND
         <include refid="frag.tenantGuardAlias">
             <property name="alias" value="i"/>
@@ -94,9 +102,15 @@
         </include>
     </select>
 
+    <!-- 취소: ACTIVE일 때만. 취소 일시·취소자(로그인 계정의 사원) 기록 -->
     <update id="updateStatusToCanceledIfActive">
         UPDATE inbound
-        SET status = 'CANCELED'
+        SET status = 'CANCELED',
+        canceled_at = SYSTIMESTAMP,
+        canceled_by = (SELECT a.employee_id
+                       FROM erp_account a
+                       WHERE a.uuid = #{cancelerUuid}
+                       AND a.company_id = #{tenantId})
         WHERE inbound_id = #{inboundId}
         AND status = 'ACTIVE'
         AND
@@ -120,8 +134,10 @@
         <if test="code != null">
             AND i.code LIKE '%' || #{code} || '%'
         </if>
-        AND i.status != 'CANCELED'
-        AND p.status = 'SHIPPED'
+        <!-- 상태 필터(선택). 없으면 취소 건도 포함 -->
+        <if test="status != null">
+            AND i.status = #{status}
+        </if>
         AND
         <include refid="frag.tenantGuardAlias">
             <property name="alias" value="i"/>
@@ -135,6 +151,14 @@
             <property name="alias" value="e"/>
         </include>
         )
+    </select>
+
+    <select id="findStatusById" resultType="InboundStatus">
+        SELECT status
+        FROM inbound
+        WHERE inbound_id = #{inboundId}
+        AND
+        <include refid="frag.tenantGuard"/>
     </select>
 
     <select id="existsById" resultType="boolean">

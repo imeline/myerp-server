@@ -12,5 +12,5 @@ public interface OutboundService {
             OutboundFindAllRequest request,
             long tenantId);
 
-    void cancelOutbound(long outboundId, long tenantId);
+    void cancelOutbound(long outboundId, long tenantId, String cancelerUuid);
 }

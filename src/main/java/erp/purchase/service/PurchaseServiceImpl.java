@@ -246,8 +246,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     @Transactional(readOnly = true)
     public PurchaseDetailResponse findPurchaseDetail(long purchaseId, long tenantId) {
-        purchaseValidator.validPurchaseIdIfPresent(purchaseId, tenantId);
-
+        // 취소된 발주도 상세 조회 가능 (없으면 아래에서 NOT_FOUND)
         PurchaseDetailRow header = purchaseMapper.findPurchaseDetailRow(tenantId, purchaseId)
                 .orElseThrow(() -> new GlobalException(ErrorStatus.NOT_FOUND_PURCHASE));
 
@@ -264,26 +263,25 @@ public class PurchaseServiceImpl implements PurchaseService {
             messageEl = "'발주 취소: purchaseId=' + #args[0]")
     @Override
     @Transactional
-    public void cancelPurchase(long purchaseId, long tenantId) {
-        // 1) 존재/활성(삭제 제외) 선검증
-        purchaseValidator.validPurchaseIdIfPresent(purchaseId, tenantId);
+    public void cancelPurchase(long purchaseId, long tenantId, String cancelerUuid) {
+        // 1) 조건부 업데이트: CONFIRMED 상태일 때만 CANCELED로 변경 (SHIPPED는 불가)
+        //    존재 검증을 먼저 하면 이미 취소된 건이 "없음"으로 나오므로, 실패했을 때 상태로 사유를 판정
+        int affectedRowCount = purchaseMapper.updateStatusToCanceledIfConfirmed(tenantId,
+                purchaseId, cancelerUuid);
 
-        // 2) 조건부 업데이트: CONFIRMED 상태일때만 CANCELED로 변경 (SHIPPED는 불가)
-        int affectedRowCount = purchaseMapper.updateStatusToIfConfirmed(tenantId,
-                purchaseId, PurchaseStatus.CANCELED);
-
-        // 3) 성공 시 즉시 종료 (추가 조회 불필요)
+        // 2) 성공 시 즉시 종료 (추가 조회 불필요)
         if (affectedRowCount == 1) {
             return;
         }
 
-        // 4) 실패 사유 판정: SHIPPED 여부만 확인
-        if (purchaseMapper.existsShippedById(tenantId, purchaseId)) {
-            throw new GlobalException(ErrorStatus.CANNOT_CANCEL_SHIPPED_PURCHASE);
+        // 3) 실패 사유 판정: 없음 / 입고됨 / 이미 취소됨
+        PurchaseStatus status = purchaseMapper.findStatusById(tenantId, purchaseId)
+                .orElseThrow(() -> new GlobalException(ErrorStatus.NOT_FOUND_PURCHASE));
+        switch (status) {
+            case SHIPPED -> throw new GlobalException(ErrorStatus.CANNOT_CANCEL_SHIPPED_PURCHASE);
+            case CANCELED -> throw new GlobalException(ErrorStatus.ALREADY_CANCELED_PURCHASE);
+            default -> throw new GlobalException(ErrorStatus.CANCEL_PURCHASE_FAIL);
         }
-
-        // 5) 그 외(이미 CANCELED 등) 일반 실패
-        throw new GlobalException(ErrorStatus.CANCEL_PURCHASE_FAIL);
     }
 
     @Override

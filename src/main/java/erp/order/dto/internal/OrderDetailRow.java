@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record OrderDetailRow(
         @NotBlank
@@ -33,6 +34,8 @@ public record OrderDetailRow(
 
         @NotNull
         @Positive
-        Integer totalAmount
+        Integer totalAmount,
+        LocalDateTime canceledAt,   // 취소 전엔 null
+        String canceledByName       // 취소 전엔 null
 ) {
 }

@@ -82,7 +82,7 @@
         JOIN item i
         ON i.item_id = pi.item_id
         WHERE pi.purchase_id = #{purchaseId}
-        AND p.status != 'CANCELED'
+        <!-- 상세 화면용: 취소된 발주도 품목 조회 가능 -->
         AND i.deleted_at IS NULL
         AND
         <include refid="frag.tenantGuardAlias">

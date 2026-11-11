@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public record PurchaseFindRow(
         @NotNull
@@ -25,7 +26,9 @@ public record PurchaseFindRow(
         @NotNull
         PurchaseStatus status,
         @NotBlank
-        String employeeName
+        String employeeName,
+        LocalDateTime canceledAt,   // 취소 전엔 null
+        String canceledByName       // 취소 전엔 null
 ) {
 
 }

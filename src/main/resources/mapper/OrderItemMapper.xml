@@ -80,7 +80,7 @@
         JOIN item i
         ON i.item_id = oi.item_id
         WHERE oi.order_id = #{orderId}
-        AND o.status != 'CANCELED'
+        <!-- 상세 화면용: 취소된 주문도 품목 조회 가능 -->
         AND i.deleted_at IS NULL
         AND
         <include refid="frag.tenantGuardAlias">

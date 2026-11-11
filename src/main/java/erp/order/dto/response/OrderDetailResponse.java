@@ -7,6 +7,7 @@ import lombok.Builder;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Builder
 public record OrderDetailResponse(
@@ -18,7 +19,9 @@ public record OrderDetailResponse(
         Integer totalItemCount,
         Integer totalQuantity,
         List<OrderItemDetailResponse> items,
-        Integer totalAmount
+        Integer totalAmount,
+        LocalDateTime canceledAt,
+        String canceledByName
 ) {
     public static OrderDetailResponse of(OrderDetailRow header, List<OrderItemDetailRow> itemRows) {
         List<OrderItemDetailResponse> items = itemRows.stream()
@@ -35,6 +38,8 @@ public record OrderDetailResponse(
                 .totalQuantity(header.totalQuantity())
                 .items(items)
                 .totalAmount(header.totalAmount())
+                .canceledAt(header.canceledAt())
+                .canceledByName(header.canceledByName())
                 .build();
     }
 }

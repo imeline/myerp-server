@@ -16,6 +16,8 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import erp.auth.security.model.UserPrincipal;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 @RestController
 @RequiredArgsConstructor
@@ -83,9 +85,10 @@ public class OrderController {
      * 성공 시 예약재고(allocated) 롤백
      */
     @DeleteMapping("/{orderId}")
-    public ApiResponse<Void> cancelOrder(@PathVariable long orderId) {
+    public ApiResponse<Void> cancelOrder(@PathVariable long orderId,
+                                         @AuthenticationPrincipal UserPrincipal principal) {
         long tenantId = TenantContext.get();
-        orderService.cancelOrder(orderId, tenantId);
+        orderService.cancelOrder(orderId, tenantId, principal.getUuid());
         return ApiResponse.onSuccess(null);
     }
 }
