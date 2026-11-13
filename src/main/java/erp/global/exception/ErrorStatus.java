@@ -31,11 +31,14 @@ public enum ErrorStatus {
     UPDATE_REFRESH_TOKEN_FAIL("AUTH109", "리프레시 토큰 갱신에 실패했습니다."),
     DELETE_REFRESH_TOKEN_FAIL("AUTH110", "리프레시 토큰 삭제에 실패했습니다."),
     INVALID_REFRESH_TOKEN("AUTH111", "유효하지 않은 리프레시 토큰입니다."),
+    INVALID_CURRENT_PASSWORD("AUTH112", "현재 비밀번호가 일치하지 않습니다."),
+    SAME_AS_CURRENT_PASSWORD("AUTH113", "현재 비밀번호와 다른 비밀번호를 입력하세요."),
 
     // ERP ACCOUNT
     CREATE_ERP_ACCOUNT_FAIL("ERP201", "계정 생성에 실패했습니다."),
     DELETE_ERP_ACCOUNT_FAIL("ERP202", "계정 삭제에 실패했습니다."),
     NOT_FOUND_ADMIN("ERP203", "존재하지 않는 관리자 계정입니다."),
+    UPDATE_PASSWORD_FAIL("ERP204", "비밀번호 변경에 실패했습니다."),
 
     // EMPLOYEE
     DUPLICATE_EMP_NO("EMP302", "이미 등록된 사번입니다."),

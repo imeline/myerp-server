@@ -121,4 +121,33 @@
     SELECT COUNT(*)
     <include refid="adminFrom"/>
   </select>
+
+  <!-- ===== 비밀번호 변경·초기화 ===== -->
+
+  <!-- 주의: SELECT 순서를 AccountPasswordRow 필드 순서와 맞출 것 -->
+  <select id="findAccountPasswordRowByUuid" resultType="AccountPasswordRow">
+    SELECT
+    erp_account_id AS erpAccountId,
+    password AS passwordHash
+    FROM erp_account
+    WHERE uuid = #{uuid}
+    AND deleted_at IS NULL
+  </select>
+
+  <select id="findResettableErpAccountIdByEmployeeId" resultType="Long">
+    SELECT erp_account_id
+    FROM erp_account
+    WHERE employee_id = #{employeeId}
+    AND role != 'SYS'
+    AND deleted_at IS NULL
+    AND
+    <include refid="frag.tenantGuard"/>
+  </select>
+
+  <update id="updatePasswordById">
+    UPDATE erp_account
+    SET password = #{passwordHash}
+    WHERE erp_account_id = #{erpAccountId}
+    AND deleted_at IS NULL
+  </update>
 </mapper>

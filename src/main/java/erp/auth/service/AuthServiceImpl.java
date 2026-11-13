@@ -112,7 +112,7 @@ public class AuthServiceImpl implements AuthService {
         String refreshToken = jwtTokenProvider.generateRefreshToken(userDetails);
 
         long erpAccountId = row.erpAccountId();
-        saveOrUpdateRefreshToken(erpAccountId, refreshToken);
+        saveRefreshToken(erpAccountId, refreshToken);
 
         saveAuthLog(true, "로그인: " + email, row.tenantId(), row.uuid(), row.name(), null);
 
@@ -170,21 +170,15 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void logout(String uuid, RefreshTokenRequest request) {
+        // 기기(브라우저)마다 토큰이 따로 있으므로, 요청한 토큰이 이 사용자의 것인지 확인 후 그 하나만 삭제
+        // → 이 기기만 로그아웃되고 다른 기기의 로그인은 유지
+        String reqRefreshToken = jwtTokenProvider.stripBearer(request.refreshToken());
         RefreshTokenRow refreshTokenRow =
-                refreshTokenMapper.findRefreshTokenRowByUuid(uuid)
+                refreshTokenMapper.findRefreshTokenRowByUuidAndToken(uuid, reqRefreshToken)
                         .orElseThrow(() ->
                                              new GlobalException(
-                                                     ErrorStatus.REFRESH_TOKEN_NOT_FOUND));
-        String dbRefreshToken = refreshTokenRow.token();
-        String reqRefreshToken = jwtTokenProvider.stripBearer(request.refreshToken());
+                                                     ErrorStatus.INVALID_REFRESH_TOKEN));
 
-        // 1) 요청으로 들어온 리프레시 토큰과 DB 저장값 비교
-        if (dbRefreshToken == null || dbRefreshToken.isBlank()
-                || !dbRefreshToken.equals(reqRefreshToken)) {
-            throw new GlobalException(ErrorStatus.INVALID_REFRESH_TOKEN);
-        }
-
-        // 2) 검증 통과하면 해당 계정의 리프레시 토큰 삭제
         int affected = refreshTokenMapper.deleteById(refreshTokenRow.refreshTokenId());
         requireOneRowAffected(affected, ErrorStatus.DELETE_REFRESH_TOKEN_FAIL);
     }
@@ -207,30 +201,24 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    @Transactional
-    protected void saveOrUpdateRefreshToken(long erpAccountId, String refreshToken) {
+    /** 한 계정이 동시에 로그인해 둘 수 있는 기기(브라우저) 수. 넘으면 가장 오래된 로그인부터 끊음 */
+    private static final int MAX_SESSIONS_PER_ACCOUNT = 5;
+
+    /**
+     * 로그인할 때마다 리프레시 토큰을 새 행으로 저장 (여러 기기 동시 로그인)
+     * - 예전 방식(계정당 1개를 덮어쓰기)은 다른 곳에서 로그인하면 기존 기기의 자동 로그인이 풀렸음
+     * - 비밀번호 변경·초기화 시에는 그 계정의 모든 토큰을 지움 (PasswordServiceImpl)
+     */
+    private void saveRefreshToken(long erpAccountId, String refreshToken) {
         // DB에는 Bearer 제거한 raw 리프레시 토큰 저장
         String refreshRaw = jwtTokenProvider.stripBearer(refreshToken);
 
-        boolean existsRefreshToken = refreshTokenMapper.existsByErpAccountId(erpAccountId);
+        long refreshTokenId = refreshTokenMapper.nextId();
+        RefreshToken entity = RefreshToken.issue(refreshTokenId, erpAccountId, refreshRaw);
+        int affectedRowCount = refreshTokenMapper.save(entity);
+        requireOneRowAffected(affectedRowCount, ErrorStatus.CREATE_REFRESH_TOKEN_FAIL);
 
-        if (existsRefreshToken) {
-            // 기존 토큰 있으면 업데이트
-            int affectedRowCount = refreshTokenMapper.updateTokenByErpAccountId(
-                    erpAccountId, refreshRaw);
-            requireOneRowAffected(affectedRowCount,
-                                  ErrorStatus.UPDATE_REFRESH_TOKEN_FAIL);
-        } else {
-            // 없으면 새로 생성
-            long refreshTokenId = refreshTokenMapper.nextId();
-            RefreshToken entity = RefreshToken.issue(
-                    refreshTokenId,
-                    erpAccountId,
-                    refreshRaw
-            );
-            int affectedRowCount = refreshTokenMapper.save(entity);
-            requireOneRowAffected(affectedRowCount,
-                                  ErrorStatus.CREATE_REFRESH_TOKEN_FAIL);
-        }
+        // 오래된 로그인 정리 (만료돼 남은 행도 여기서 함께 지워짐)
+        refreshTokenMapper.deleteOldestBeyond(erpAccountId, MAX_SESSIONS_PER_ACCOUNT);
     }
 }

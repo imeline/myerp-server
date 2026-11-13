@@ -5,6 +5,7 @@ import erp.account.dto.request.AdminUpdateRequest;
 import erp.account.dto.response.AdminFindAllResponse;
 import erp.account.dto.response.AdminFindResponse;
 import erp.global.response.PageResponse;
+import erp.auth.dto.response.PasswordResetResponse;
 
 /**
  * 관리자(ADMIN) 계정 관리 - SYS 전용 (회사 구분 없이 전체)
@@ -21,6 +22,9 @@ public interface AdminAccountService {
 
     /** 이름·사번·연락처 수정 */
     void updateAdmin(long erpAccountId, AdminUpdateRequest request);
+
+    /** 비밀번호를 임시 비밀번호로 초기화 (임시 비밀번호는 응답으로 한 번만) */
+    PasswordResetResponse resetPassword(long erpAccountId);
 
     /** 삭제 - 사원 퇴사 처리 + 계정 소프트 삭제 (기록은 남음) */
     void deleteAdmin(long erpAccountId);

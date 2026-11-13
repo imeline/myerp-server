@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import erp.auth.dto.response.PasswordResetResponse;
+import erp.auth.service.PasswordService;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class AdminAccountServiceImpl implements AdminAccountService {
 
     private final ErpAccountMapper erpAccountMapper;
     private final EmployeeService employeeService;
+    private final PasswordService passwordService;
 
     @Override
     @Transactional(readOnly = true)
@@ -66,6 +69,13 @@ public class AdminAccountServiceImpl implements AdminAccountService {
     public void deleteAdmin(long erpAccountId) {
         AdminFindRow admin = findAdminRow(erpAccountId);
         employeeService.retireEmployee(admin.employeeId(), admin.companyId());
+    }
+
+    @Override
+    @Transactional
+    public PasswordResetResponse resetPassword(long erpAccountId) {
+        findAdminRow(erpAccountId); // ADMIN 계정인지 확인
+        return passwordService.resetPassword(erpAccountId);
     }
 
     /** ADMIN 역할이고 삭제되지 않은 계정만 (없으면 ERP203) */

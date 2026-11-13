@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import erp.account.dto.internal.AdminFindAllRow;
 import java.util.List;
 import erp.account.dto.internal.AdminFindRow;
+import erp.account.dto.internal.AccountPasswordRow;
 
 @Mapper
 public interface ErpAccountMapper {
@@ -36,6 +37,18 @@ public interface ErpAccountMapper {
 
     long countAdmin(@Param("companyName") String companyName,
                     @Param("name") String name);
+
+    // ===== 비밀번호 변경·초기화 =====
+
+    /** 로그인한 계정(uuid)의 계정 ID·비밀번호 해시 (삭제된 계정 제외) */
+    Optional<AccountPasswordRow> findAccountPasswordRowByUuid(@Param("uuid") String uuid);
+
+    /** 회사 안 사원의 계정 ID (삭제 계정·SYS 제외) - ADMIN의 사원 비밀번호 초기화용 */
+    Optional<Long> findResettableErpAccountIdByEmployeeId(@Param("tenantId") long tenantId,
+                                                          @Param("employeeId") long employeeId);
+
+    int updatePasswordById(@Param("erpAccountId") long erpAccountId,
+                           @Param("passwordHash") String passwordHash);
 
     /** ADMIN 역할이고 삭제되지 않은 계정 단건 */
     Optional<AdminFindRow> findAdminFindRowById(@Param("erpAccountId") long erpAccountId);

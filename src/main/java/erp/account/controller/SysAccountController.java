@@ -22,6 +22,7 @@ import erp.account.dto.response.AdminFindResponse;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import erp.auth.dto.response.PasswordResetResponse;
 
 /**
  * SYS 전용 계정 등록 (/api/v1/sys/** 는 SecurityConfig에서 ROLE_SYS만 허용)
@@ -57,6 +58,12 @@ public class SysAccountController {
                                          @Valid @RequestBody AdminUpdateRequest request) {
         adminAccountService.updateAdmin(erpAccountId, request);
         return ApiResponse.onSuccess(null);
+    }
+
+    /** 관리자(ADMIN) 비밀번호 초기화 - 임시 비밀번호를 응답으로 한 번만 돌려줌 */
+    @PostMapping("/admin/{erpAccountId}/password-reset")
+    public ApiResponse<PasswordResetResponse> resetAdminPassword(@PathVariable long erpAccountId) {
+        return ApiResponse.onSuccess(adminAccountService.resetPassword(erpAccountId));
     }
 
     /** 관리자(ADMIN) 계정 삭제 - 사원 퇴사 처리 + 계정 소프트 삭제 */

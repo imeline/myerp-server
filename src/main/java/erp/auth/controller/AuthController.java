@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import erp.auth.dto.request.PasswordChangeRequest;
+import erp.auth.service.PasswordService;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -20,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final PasswordService passwordService;
 
     // 계정 등록은 역할별 경로로 이동
     // - SYS·ADMIN 계정: POST /api/v1/sys/sys-account, /api/v1/sys/admin (SysAccountController, SYS 전용)
@@ -34,6 +38,15 @@ public class AuthController {
     @PostMapping("/refresh")
     public ApiResponse<LoginResponse> refresh(@Valid @RequestBody RefreshTokenRequest request) {
         return ApiResponse.onSuccess(authService.refresh(request));
+    }
+
+    /** 내 비밀번호 변경 (로그인한 모든 역할) */
+    @PutMapping("/password")
+    public ApiResponse<Void> changeMyPassword(
+            @AuthenticationPrincipal UserPrincipal principal,
+            @Valid @RequestBody PasswordChangeRequest request) {
+        passwordService.changeMyPassword(principal.getUuid(), request);
+        return ApiResponse.onSuccess(null);
     }
 
     @PostMapping("/logout")

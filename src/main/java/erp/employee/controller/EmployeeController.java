@@ -18,6 +18,8 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import erp.auth.dto.response.PasswordResetResponse;
+import erp.auth.service.PasswordService;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +28,7 @@ public class EmployeeController {
 
     private final EmployeeService employeeService;
     private final AuthService authService;
+    private final PasswordService passwordService;
 
     /**
      * 사원(USER 계정) 등록 - ADMIN 전용
@@ -64,6 +67,13 @@ public class EmployeeController {
         long tenantId = TenantContext.get();
         employeeService.updateEmployee(employeeId, request, tenantId);
         return ApiResponse.onSuccess(null);
+    }
+
+    /** 사원 비밀번호 초기화 - 자기 회사 사원만, 임시 비밀번호를 응답으로 한 번만 돌려줌 */
+    @PostMapping("/{employeeId}/password-reset")
+    public ApiResponse<PasswordResetResponse> resetEmployeePassword(@PathVariable Long employeeId) {
+        long tenantId = TenantContext.get();
+        return ApiResponse.onSuccess(passwordService.resetEmployeePassword(employeeId, tenantId));
     }
 
     @PostMapping("/{employeeId}/retire")

@@ -11,6 +11,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Date;
+import java.util.UUID;
 import java.util.function.Function;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +39,7 @@ public class JwtTokenProvider {
         Date now = new Date();
 
         JwtBuilder builder = Jwts.builder()
+                .setId(UUID.randomUUID().toString()) // 같은 초에 여러 번 발급돼도 토큰이 겹치지 않게
                 .setSubject(userDetails.getUsername())
                 .claim(CLAIM_ROLE, userDetails.getAuthorities()
                         .iterator().next().getAuthority())

@@ -26,21 +26,27 @@
         WHERE token = #{token}
     </select>
 
-    <select id="findRefreshTokenRowByUuid"
-            parameterType="string"
+    <select id="findRefreshTokenRowByUuidAndToken"
             resultType="RefreshTokenRow">
-        SELECT refresh_token_id,
-               token
+        SELECT r.refresh_token_id,
+               r.token
         FROM refresh_token r
                  JOIN erp_account a ON a.erp_account_id = r.erp_account_id
         WHERE a.uuid = #{uuid}
+          AND r.token = #{token}
     </select>
 
-    <update id="updateTokenByErpAccountId">
-        UPDATE refresh_token
-        SET token = #{token}
+    <!-- 최신(id가 큰) keep개만 남기고 삭제 -->
+    <delete id="deleteOldestBeyond">
+        DELETE
+        FROM refresh_token
         WHERE erp_account_id = #{erpAccountId}
-    </update>
+          AND refresh_token_id NOT IN (SELECT refresh_token_id
+                                       FROM refresh_token
+                                       WHERE erp_account_id = #{erpAccountId}
+                                       ORDER BY refresh_token_id DESC
+                                       FETCH FIRST #{keep} ROWS ONLY)
+    </delete>
 
     <delete id="deleteById">
         DELETE
@@ -48,11 +54,9 @@
         WHERE refresh_token_id = #{refreshTokenId}
     </delete>
 
-    <select id="existsByErpAccountId"
-            parameterType="long"
-            resultType="boolean">
-        SELECT CASE WHEN COUNT(1) > 0 THEN 1 ELSE 0 END
+    <delete id="deleteByErpAccountId">
+        DELETE
         FROM refresh_token
         WHERE erp_account_id = #{erpAccountId}
-    </select>
+    </delete>
 </mapper>
