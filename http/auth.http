@@ -86,7 +86,7 @@ Content-Type: application/json
 
 {
   "loginEmail": "admin3@naver.com",
-  "password": "123456"
+  "password": "1234567"
 }
 
 ### USER 로그인
